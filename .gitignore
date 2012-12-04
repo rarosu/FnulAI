@@ -1,0 +1,15 @@
+# Ignore build files
+*/Build/
+*/Dist/
+
+# Ignore library files (these can be added and stored manually)
+include/
+lib/
+
+# Ignore VS session files
+*.user
+*.suo
+*.ncb
+
+# Ignore backup files
+*.swp

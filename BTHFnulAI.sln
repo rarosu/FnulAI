@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FnulAIModule", "FnulAIModule\FnulAIModule.vcproj", "{05DA06CB-BF69-4B58-B4AA-F4BC9B59B45C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AIModuleLoader", "AIModuleLoader\AIModuleLoader.vcproj", "{5974F732-F9ED-40E4-8AF3-5E968C812F78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{05DA06CB-BF69-4B58-B4AA-F4BC9B59B45C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{05DA06CB-BF69-4B58-B4AA-F4BC9B59B45C}.Debug|Win32.Build.0 = Debug|Win32
+		{05DA06CB-BF69-4B58-B4AA-F4BC9B59B45C}.Release|Win32.ActiveCfg = Release|Win32
+		{05DA06CB-BF69-4B58-B4AA-F4BC9B59B45C}.Release|Win32.Build.0 = Release|Win32
+		{5974F732-F9ED-40E4-8AF3-5E968C812F78}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5974F732-F9ED-40E4-8AF3-5E968C812F78}.Debug|Win32.Build.0 = Debug|Win32
+		{5974F732-F9ED-40E4-8AF3-5E968C812F78}.Release|Win32.ActiveCfg = Release|Win32
+		{5974F732-F9ED-40E4-8AF3-5E968C812F78}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
