@@ -3,8 +3,9 @@
 */Dist/
 
 # Ignore library files (these can be added and stored manually)
-include/
-lib/
+*.lib
+*.pdb
+*.idb
 
 # Ignore VS session files
 *.user
