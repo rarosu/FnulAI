@@ -233,7 +233,7 @@ int ExplorationManager::getLastVisitFrame(Region* region)
 	
 	//Error: No region found
 	TilePosition goal = TilePosition(region->getCenter());
-	Broodwar->printf("FATAL GetLastVF: Unable to find region for tile (%d,%d)", goal.x(), goal.y());
+	//Broodwar->printf("FATAL GetLastVF: Unable to find region for tile (%d,%d)", goal.x(), goal.y());
 	return -1;
 }
 
