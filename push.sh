@@ -1,1 +1,1 @@
-push git@github.com:rarosu/FnulAI.git $1
+git push git@github.com:rarosu/FnulAI.git $1
