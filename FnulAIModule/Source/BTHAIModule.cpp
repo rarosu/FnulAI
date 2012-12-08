@@ -35,8 +35,8 @@ void BTHAIModule::onStart()
 	BWTA::readMap();
 	analyzed=false;
 	analysis_just_finished=false;
-	//CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AnalyzeThread, NULL, 0, NULL); //Threaded version
-	AnalyzeThread();
+	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AnalyzeThread, NULL, 0, NULL); //Threaded version
+	//AnalyzeThread();
 
 	profile = false;
 
