@@ -18,6 +18,7 @@ using namespace std;
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
 
+// TODO: Reimplement singleton
 class AgentManager {
 
 private:
@@ -28,7 +29,9 @@ private:
 	int lastCallFrame;
 
 public:
-	static int StartFrame;
+	// TODO: Implement a proper constructor/destructor
+
+	static int StartFrame;	// TODO: Remove? Never used, has no purpose.
 
 	~AgentManager();
 
@@ -44,6 +47,8 @@ public:
 	 * set to inactive and are removed during the cleanup. */
 	void removeAgent(Unit* unit);
 
+	// TODO: Called on for a more general case? Problem?
+	// WARNING: Potential danger, invalid parameters passed.
 	/** Called when a Zerg Drone is morphed into another unit. */
 	void morphDrone(Unit* unit);
 

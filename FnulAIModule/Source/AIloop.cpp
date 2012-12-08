@@ -23,17 +23,25 @@ void AIloop::computeActions()
 	//First, do some checks to see if it is time to resign
 	if (AgentManager::getInstance()->noMiningWorkers() == 0 && Broodwar->self()->minerals() <= 50)
 	{
+		// Be polite!
+		Broodwar->sendText("gg");
+
 		Broodwar->printf("No workers left. Bailing out.");
 		Broodwar->leaveGame();
 		return;
 	}
+
 	if (AgentManager::getInstance()->countNoBases() == 0 && Broodwar->getFrameCount() > 500)
 	{
+		// Politeness is important
+		Broodwar->sendText("gg");
+
 		Broodwar->printf("No bases left. Bailing out.");
 		Broodwar->leaveGame();
 		return;
 	}
 
+	// TODO: If the singletons are changed, this needs to be changed too.
 	AgentManager::getInstance()->computeActions();
 	BuildPlanner::getInstance()->computeActions();
 	Commander::getInstance()->computeActions();
@@ -44,6 +52,7 @@ void AIloop::addUnit(Unit* unit)
 {
 	AgentManager::getInstance()->addAgent(unit);
 
+	// TODO: wut? Buildings are not in the build order?
 	//Remove from buildorder if this is a building
 	if (unit->getType().isBuilding())
 	{
@@ -53,12 +62,14 @@ void AIloop::addUnit(Unit* unit)
 
 void AIloop::morphUnit(Unit* unit)
 {
+	// TODO: Look this up. Morph drone? Always? What about mutalisks?
 	AgentManager::getInstance()->morphDrone(unit);
 	BuildPlanner::getInstance()->unlock(unit->getType());
 }
 
 void AIloop::unitDestroyed(Unit* unit)
 {
+	// One of our units were destroyed...
 	if (unit->getPlayer()->getID() == Broodwar->self()->getID())
 	{
 		AgentManager::getInstance()->removeAgent(unit);
@@ -67,20 +78,29 @@ void AIloop::unitDestroyed(Unit* unit)
 			BuildPlanner::getInstance()->buildingDestroyed(unit);
 		}
 
+		// NOTE: Agents are not immediately removed, only removed at AgentManager::cleanup
+
+		// TODO: Assist workers that have been destroyed? They have just been removed.
+		// WARNING: Potential danger
 		//Assist workers under attack
 		if (unit->getType().isWorker())
 		{
 			Commander::getInstance()->assistWorker(AgentManager::getInstance()->getAgent(unit->getID()));
 		}
 
+		// WARNING: Potential danger
 		//Update dead score
 		if (unit->getType().canMove())
 		{
 			Commander::getInstance()->ownDeadScore += unit->getType().destroyScore();
 		}
 
+		// TODO: Look this one up.
 		AgentManager::getInstance()->cleanup();
 	}
+
+	// TODO: Will allies count into the neutral category? Otherwise, we count allied death as a good thing...
+	// One of our enemies' or allies' units were destroyed
 	if (unit->getPlayer()->getID() != Broodwar->self()->getID() && !unit->getPlayer()->isNeutral())
 	{
 		ExplorationManager::getInstance()->unitDestroyed(unit);
@@ -92,6 +112,7 @@ void AIloop::show_debug()
 {
 	if (debug_mode > 0)
 	{
+		// Show the goals of our units
 		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
@@ -99,6 +120,7 @@ void AIloop::show_debug()
 			if (!agents.at(i)->isBuilding() && debug_mode >= 2) agents.at(i)->debug_showGoal();
 		}
 
+		// Type manager information
 		BuildPlanner::getInstance()->printInfo();
 		ExplorationManager::getInstance()->printInfo();
 		Commander::getInstance()->printInfo();
@@ -108,6 +130,7 @@ void AIloop::show_debug()
 
 		Commander::getInstance()->debug_showGoal();
 
+		// Draw information from the terrain analysis
 		if (debug_mode >= 1)
 		{
 			drawTerrainData();

@@ -302,6 +302,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Utils\Logger.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UnitAgents\Zerg\LurkerAgent.cpp"
 				>
 			</File>
@@ -597,6 +601,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\UnitAgents\Zerg\InfestedTerranAgent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Utils\Logger.h"
 				>
 			</File>
 			<File

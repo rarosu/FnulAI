@@ -10,20 +10,32 @@
 #include <Utils\Config.h>
 #include <Shlwapi.h>
 
+
+
 using namespace BWAPI;
 
 bool analyzed;
 bool analysis_just_finished;
 bool leader = false;
 
+BTHAIModule::BTHAIModule()
+	: m_logger("bwapi-data\\AI\\FnulAILog.txt")
+{
+	m_logger.printfln("Loading the FnulAI module");
+}
+
+BTHAIModule::~BTHAIModule()
+{
+	m_logger.printfln("Releasing the FnulAI module");
+}
+
 void BTHAIModule::onStart() 
 {
 	Profiler::getInstance()->start("OnInit");
 
-	//Broodwar->printf("The map is %s, a %d player map", Broodwar->mapName().c_str(),Broodwar->getStartLocations().size());
-	
 	//Needed for BWAPI to work
 	Broodwar->enableFlag(Flag::UserInput);
+
 	//Set max speed
 	speed = 8; //10
 	Broodwar->setLocalSpeed(speed);
@@ -31,7 +43,7 @@ void BTHAIModule::onStart()
 	//Uncomment to enable complete map information
 	//Broodwar->enableFlag(Flag::CompleteMapInformation);
 	
-	//Analyze map using BWTA
+	//Analyze map using BWTA (use separate thread)
 	BWTA::readMap();
 	analyzed=false;
 	analysis_just_finished=false;
@@ -41,14 +53,18 @@ void BTHAIModule::onStart()
 	profile = false;
 
 	//Init our singleton agents
+	// TODO: Change these singletons
 	CoverMap::getInstance();
 	BuildPlanner::getInstance();
 	UpgradesPlanner::getInstance();
 	ResourceManager::getInstance();
 	Pathfinder::getInstance();
+
+	// TODO: Need a better memory management model
 	loop = new AIloop();
 	loop->setDebugMode(1);
 
+	// If replay, list all players and their races
 	if (Broodwar->isReplay()) 
 	{
 		Broodwar->printf("The following players are in this replay:");
@@ -67,8 +83,6 @@ void BTHAIModule::onStart()
 		AgentManager::getInstance()->addAgent(*i);
 	}
 
-	//Broodwar->printf("BTHAI %s (%s)", VERSION.c_str(), Broodwar->self()->getRace().getName().c_str());
-
 	running = true;
 
 	Profiler::getInstance()->end("OnInit");
@@ -77,9 +91,9 @@ void BTHAIModule::onStart()
 void BTHAIModule::gameStopped()
 {
 	//statistics->WriteStatisticsFile(isWinner);
-	Pathfinder::getInstance()->stop();
+	//Pathfinder::getInstance()->stop();
 	//delete(statistics);
-	Profiler::getInstance()->dumpToFile();
+	//Profiler::getInstance()->dumpToFile();
 	running = false;
 }
 
@@ -97,25 +111,30 @@ void BTHAIModule::onFrame()
 		//Game over. Do nothing.
 		return;
 	}
+
 	if (!Broodwar->isInGame()) 
 	{
 		//Not in game. Do nothing.
 		gameStopped();
 		return;
 	}
+
 	if (Broodwar->isReplay()) 
 	{
 		//Replay. Do nothing.
 		return;
 	}
 	
+	// Update the AI per frame logic
 	loop->computeActions();
 	loop->show_debug();
 
+	// Display the name of this bot on screen
 	Config::getInstance()->displayBotName();
 
 	Profiler::getInstance()->end("OnFrame");
 
+	// Display profiling information
 	if (profile) Profiler::getInstance()->showAll();
 }
 
@@ -176,6 +195,7 @@ void BTHAIModule::onSendText(std::string text)
 	}
 	else if (text=="-") 
 	{
+		// TODO: Impose limit?
 		speed += 4;
 		Broodwar->printf("Speed decreased to %d", speed);
 		Broodwar->setLocalSpeed(speed);
@@ -208,12 +228,12 @@ void BTHAIModule::onSendText(std::string text)
 					Broodwar->printf("Distance to base: %d", (int)dist);
 				}
 			}
-			
 		}
 	}
 	else 
 	{
-		Broodwar->printf("You typed '%s'!",text.c_str());
+		//Broodwar->printf("You typed '%s'!",text.c_str());
+		Broodwar->sendText(text.c_str());
 	}
 }
 
@@ -228,11 +248,14 @@ void BTHAIModule::onPlayerLeft(BWAPI::Player* player)
 	{
 		gameStopped();
 	}
+
 	Broodwar->sendText("%s left the game.",player->getName().c_str());
 }
 
 void BTHAIModule::onNukeDetect(BWAPI::Position target) 
 {
+	// TODO: React on this! Make all units move outside of the blast radius?
+	//		 Notify the commander and let it make a decision?
 	if (target != Positions::Unknown) 
 	{
 		TilePosition t = TilePosition(target);
@@ -246,18 +269,19 @@ void BTHAIModule::onNukeDetect(BWAPI::Position target)
 
 void BTHAIModule::onUnitDiscover(BWAPI::Unit* unit) 
 {
-	
+	// TODO: Notify the commander about new intel?
 }
 
 void BTHAIModule::onUnitEvade(BWAPI::Unit* unit) 
 {
-	
+	// TODO: Determine what the hell this means...
 }
 
 void BTHAIModule::onUnitShow(BWAPI::Unit* unit) 
 {
 	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) return;
 
+	// We located a new unit. If it is an enemy, add it to our spotted units.
 	if (unit->getPlayer()->getID() != Broodwar->self()->getID()) 
 	{
 		if (!unit->getPlayer()->isNeutral() && !unit->getPlayer()->isAlly(Broodwar->self()))
@@ -269,7 +293,7 @@ void BTHAIModule::onUnitShow(BWAPI::Unit* unit)
 
 void BTHAIModule::onUnitHide(BWAPI::Unit* unit) 
 {
-	
+	// TODO: Determine what this is too...
 }
 
 void BTHAIModule::onUnitCreate(BWAPI::Unit* unit)
@@ -290,6 +314,7 @@ void BTHAIModule::onUnitMorph(BWAPI::Unit* unit)
 {
 	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) return;
 
+	// TODO: Look into this. Why not call morphUnit for archons?
 	if (BuildPlanner::isZerg())
 	{
 		loop->morphUnit(unit);
@@ -302,7 +327,7 @@ void BTHAIModule::onUnitMorph(BWAPI::Unit* unit)
 
 void BTHAIModule::onUnitRenegade(BWAPI::Unit* unit) 
 {
-	
+	// TODO: wut?
 }
 
 void BTHAIModule::onSaveGame(std::string gameName) 
@@ -312,56 +337,68 @@ void BTHAIModule::onSaveGame(std::string gameName)
 
 DWORD WINAPI AnalyzeThread()
 {
+	// TODO: Why doesn't this work for every level, if we do not already have analyzed data for it?
 	BWTA::analyze();
 	
+	// TODO: Is there any difference between these? Are they even USED?
+	//		 Note: They are extern global variables. Could be used anywhere...
 	analyzed = true;
 	analysis_just_finished = true;
+
 	return 0;
 }
 
+
+
 bool BTHAITournamentModule::onAction(int actionType, void *parameter)
 {
-  switch ( actionType )
-  {
-  case Tournament::SendText:
-  case Tournament::Printf:
-    // Call our bad word filter and allow the AI module to send text
-    return true;
-  case Tournament::EnableFlag:
-    switch ( *(int*)parameter )
-    {
-    case Flag::CompleteMapInformation:
-    case Flag::UserInput:
-      // Disallow these two flags
-      return false;
-    }
-    // Allow other flags if we add more that don't affect gameplay specifically
-    return true;
-  case Tournament::LeaveGame:
-  case Tournament::PauseGame:
-  case Tournament::RestartGame:
-  case Tournament::ResumeGame:
-  case Tournament::SetFrameSkip:
-  case Tournament::SetGUI:
-  case Tournament::SetLocalSpeed:
-  case Tournament::SetMap:
-    return false; // Disallow these actions
-  case Tournament::ChangeRace:
-  case Tournament::SetLatCom:
-  case Tournament::SetTextSize:
-    return true; // Allow these actions
-  case Tournament::SetCommandOptimizationLevel:
-    return *(int*)parameter > MINIMUM_COMMAND_OPTIMIZATION; // Set a minimum command optimization level 
-                                                            // to reduce APM with no action loss
-  default:
-    break;
-  }
-  return true;
+	switch ( actionType )
+	{
+		case Tournament::SendText:
+		case Tournament::Printf:
+		// Call our bad word filter and allow the AI module to send text
+		return true;
+
+		case Tournament::EnableFlag:
+			switch ( *(int*)parameter )
+			{
+			case Flag::CompleteMapInformation:
+			case Flag::UserInput:
+				// Disallow these two flags
+				return false;
+			}
+
+			// Allow other flags if we add more that don't affect gameplay specifically
+			return true;
+
+		case Tournament::LeaveGame:
+		case Tournament::PauseGame:
+		case Tournament::RestartGame:
+		case Tournament::ResumeGame:
+		case Tournament::SetFrameSkip:
+		case Tournament::SetGUI:
+		case Tournament::SetLocalSpeed:
+		case Tournament::SetMap:
+		return false; // Disallow these actions
+
+		case Tournament::ChangeRace:
+		case Tournament::SetLatCom:
+		case Tournament::SetTextSize:
+		return true; // Allow these actions
+
+		case Tournament::SetCommandOptimizationLevel:
+		return *(int*)parameter > MINIMUM_COMMAND_OPTIMIZATION; // Set a minimum command optimization level 
+																// to reduce APM with no action loss
+		default:
+		break;
+	}
+
+	return true;
 }
 
 void BTHAITournamentModule::onFirstAdvertisement()
 {
-  leader = true;
-  Broodwar->sendText("Welcome to " TOURNAMENT_NAME "!");
-  Broodwar->sendText("Brought to you by " SPONSORS ".");
+	leader = true;
+	Broodwar->sendText("Welcome to " TOURNAMENT_NAME "!");
+	Broodwar->sendText("Brought to you by " SPONSORS ".");
 }

@@ -25,6 +25,8 @@ private:
 	void drawTerrainData();
 
 public:
+	// TODO: Remove redundant constructor/destructor. No resource handling.
+
 	/** Constructor */
 	AIloop();
 
