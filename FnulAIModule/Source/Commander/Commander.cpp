@@ -27,10 +27,12 @@ Commander::Commander()
 
 Commander::~Commander()
 {
+	/*
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
 		delete squads.at(i);
 	}
+	*/
 	
 	//delete instance;
 }

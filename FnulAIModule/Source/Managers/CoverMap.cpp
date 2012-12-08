@@ -100,11 +100,13 @@ CoverMap::CoverMap()
 
 CoverMap::~CoverMap()
 {
+	/*
 	for(int i = 0 ; i < w ; i++)
 	{
 		delete[] cover_map[i];
 	}
 	delete[] cover_map;
+	*/
 
 	instanceFlag = false;
 }

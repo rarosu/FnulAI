@@ -12,10 +12,12 @@ Profiler::Profiler()
 
 Profiler::~Profiler()
 {
+	/*
 	for (int i = 0; i < (int)obj.size(); i++)
 	{	
 		delete obj.at(i);
 	}
+	*/
 }
 
 Profiler* Profiler::getInstance()

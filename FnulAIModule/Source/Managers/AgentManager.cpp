@@ -19,10 +19,12 @@ AgentManager::AgentManager()
 AgentManager::~AgentManager()
 {
 	instanceFlag = false;
+	/*
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		delete agents.at(i);
 	}
+	*/
 }
 
 AgentManager* AgentManager::getInstance()
@@ -238,7 +240,7 @@ void AgentManager::cleanup()
 	{
 		if (!agents.at(i)->isAlive())
 		{
-			delete agents.at(i);
+			//delete agents.at(i);
 			agents.erase(agents.begin() + i);
 			cnt++;
 			i--;

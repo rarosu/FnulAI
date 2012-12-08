@@ -84,6 +84,6 @@ int CThread::runProcess (void* Param)
 {
 	CThread*	thread;
 	thread			= (CThread*)((param*)Param)->pThread;
-	delete	((param*)Param);
+	//delete	((param*)Param);
 	return thread->Process (0);
 }

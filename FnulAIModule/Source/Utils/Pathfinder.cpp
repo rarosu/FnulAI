@@ -22,7 +22,7 @@ Pathfinder::~Pathfinder()
 
 	for (int i = 0; i < (int)pathObj.size(); i++)
 	{	
-		delete pathObj.at(i);
+		//delete pathObj.at(i);
 	}
 }
 

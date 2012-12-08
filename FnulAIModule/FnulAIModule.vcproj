@@ -62,6 +62,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="mpfr-vc90-mt.lib gmp-vc90-mt.lib libboost_thread-vc90-mt-1_40.lib BWAPI.lib BWTA.lib tinyxmld.lib CGAL-vc90-mt-gd.lib CGAL-vc90-mt.lib libboost_thread-vc90-mt-gd-1_40.lib gmp-vc90-mt-gd.lib mpfr-vc90-mt-gd.lib shlwapi.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;"
+				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -135,6 +136,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="BWAPI.lib BWTA.lib tinyxml.lib CGAL-vc90-mt.lib libboost_thread-vc90-mt-1_40.lib gmp-vc90-mt.lib mpfr-vc90-mt.lib shlwapi.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;"
+				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
