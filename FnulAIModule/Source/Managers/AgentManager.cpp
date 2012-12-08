@@ -23,7 +23,6 @@ AgentManager::~AgentManager()
 	{
 		delete agents.at(i);
 	}
-	delete instance;
 }
 
 AgentManager* AgentManager::getInstance()

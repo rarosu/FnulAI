@@ -13,7 +13,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	delete instance;
+
 }
 
 ResourceManager* ResourceManager::getInstance()

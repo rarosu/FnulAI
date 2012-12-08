@@ -31,7 +31,8 @@ Commander::~Commander()
 	{
 		delete squads.at(i);
 	}
-	delete instance;
+	
+	//delete instance;
 }
 
 Commander* Commander::getInstance()

@@ -107,7 +107,6 @@ CoverMap::~CoverMap()
 	delete[] cover_map;
 
 	instanceFlag = false;
-	delete instance;
 }
 
 CoverMap* CoverMap::getInstance()

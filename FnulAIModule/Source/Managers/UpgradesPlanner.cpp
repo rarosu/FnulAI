@@ -21,7 +21,7 @@ UpgradesPlanner::UpgradesPlanner()
 
 UpgradesPlanner::~UpgradesPlanner()
 {
-	delete instance;
+
 }
 
 UpgradesPlanner* UpgradesPlanner::getInstance()

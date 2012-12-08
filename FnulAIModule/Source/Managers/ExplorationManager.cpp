@@ -38,7 +38,6 @@ ExplorationManager::~ExplorationManager()
 	}
 	
 	instanceFlag = false;
-	delete instance;
 }
 
 void ExplorationManager::setInactive()

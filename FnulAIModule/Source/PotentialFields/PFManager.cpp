@@ -22,7 +22,6 @@ PFManager::PFManager()
 PFManager::~PFManager()
 {
 	instanceFlag = false;
-	delete instance;
 }
 
 PFManager* PFManager::getInstance()

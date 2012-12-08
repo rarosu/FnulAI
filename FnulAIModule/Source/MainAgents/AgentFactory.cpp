@@ -58,7 +58,6 @@ AgentFactory::AgentFactory()
 AgentFactory::~AgentFactory()
 {
 	instanceFlag = false;
-	delete instance;
 }
 
 AgentFactory* AgentFactory::getInstance()
