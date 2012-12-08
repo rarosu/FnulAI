@@ -18,6 +18,7 @@ MarineAgent::MarineAgent(Unit* mUnit)
 
 bool MarineAgent::isNeededInBunker()
 {
+	/*
 	if (!unit->isLoaded())
 	{
 		Squad* sq = Commander::getInstance()->getSquad(squadID);
@@ -40,6 +41,7 @@ bool MarineAgent::isNeededInBunker()
 			}
 		}
 	}
+	*/
 	return false;
 }
 
