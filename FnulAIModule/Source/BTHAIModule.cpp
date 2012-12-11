@@ -21,6 +21,8 @@ BTHAIModule::~BTHAIModule()
 
 void BTHAIModule::onStart() 
 {
+	
+
 	Profiler::Instance().start("OnInit");
 
 	//Needed for BWAPI to work
