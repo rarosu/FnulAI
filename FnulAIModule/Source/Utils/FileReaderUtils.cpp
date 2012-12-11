@@ -77,7 +77,7 @@ string FileReaderUtils::getFilename(string subpath)
 
 string FileReaderUtils::getScriptPath()
 {
-	return Config::getInstance()->getScriptPath();
+	return Config::Instance().getScriptPath();
 }
 
 bool FileReaderUtils::fileExists(string subpath, string filename)

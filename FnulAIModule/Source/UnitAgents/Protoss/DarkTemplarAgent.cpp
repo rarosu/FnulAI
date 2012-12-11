@@ -18,5 +18,5 @@ DarkTemplarAgent::DarkTemplarAgent(Unit* mUnit)
 void DarkTemplarAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

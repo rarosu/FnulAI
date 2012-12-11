@@ -2,6 +2,7 @@
 #define __BUILDPLANNER_H__
 
 #include <BWAPI.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -21,15 +22,13 @@ struct BuildQueueItem {
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class BuildPlanner {
-
-private:
-	static BuildPlanner* instance;
-
+class BuildPlanner : public r2::Singleton<BuildPlanner> {
 protected:
-	BuildPlanner();
+	int lastCommandCenter;
+	int lastCallFrame;
 	vector<UnitType> buildOrder;
 	vector<BuildQueueItem> buildQueue;
+
 	void lock(int buildOrderIndex, int unitId);
 	bool executeOrder(UnitType type);
 	bool shallBuildSupplyDepot();
@@ -37,17 +36,10 @@ protected:
 
 	bool hasResourcesLeft();
 	int mineralsNearby(TilePosition center);
-
-	int lastCommandCenter;
-
-	int lastCallFrame;
-
 public:
-	/** Destructor. */
+	BuildPlanner();
 	~BuildPlanner();
 
-	/** Returns the instance to the BuildPlanner that is currently used. */
-	static BuildPlanner* getInstance();
 
 	/** Returns the number of units of the specified type currently being produced. */
 	int noInProduction(UnitType type);

@@ -4,6 +4,7 @@
 #include <UnitAgents\UnitAgent.h>
 #include <Managers\SpottedObject.h>
 #include <Commander\Squad.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -131,7 +132,7 @@ struct ExploreData {
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class ExplorationManager {
+class ExplorationManager : public r2::Singleton<ExplorationManager> {
 
 private:
 	vector<SpottedObject*> spottedBuildings;
@@ -143,28 +144,21 @@ private:
 	ForceData ownForce;
 	ForceData enemyForce;
 
-	ExplorationManager();
-	static ExplorationManager* instance;
-	static bool instanceFlag;
-	
-	void calcEnemyForceData();
-	void calcOwnForceData();
-
-	void cleanup();
-
 	bool active;
-
 	int lastCallFrame;
 
 	int siteSetFrame;
 	TilePosition expansionSite;
 
+
+	void calcEnemyForceData();
+	void calcOwnForceData();
+
+	void cleanup();
 public:
-	/** Destructor */
+	ExplorationManager();
 	~ExplorationManager();
 
-	/** Returns the instance of the class. */
-	static ExplorationManager* getInstance();
 
 	/** Sets ExplorationManager to inactive. Is used when perfect information is activated. */
 	void setInactive();

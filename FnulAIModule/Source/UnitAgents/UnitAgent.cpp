@@ -81,7 +81,7 @@ void UnitAgent::debug_showGoal()
 void UnitAgent::computeActions()
 {
 #if DISABLE_UNIT_AI == 0
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, false);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, false);
 #endif
 }
 
@@ -112,7 +112,7 @@ void UnitAgent::computeKitingActions()
 	}
 	else
 	{
-		PFManager::getInstance()->computeAttackingUnitActions(this, goal, false, false);
+		PFManager::Instance().computeAttackingUnitActions(this, goal, false, false);
 	}
 }
 
@@ -455,7 +455,7 @@ int UnitAgent::friendlyUnitsWithinRange()
 int UnitAgent::friendlyUnitsWithinRange(int maxRange)
 {
 	int fCnt = 0;
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -474,7 +474,7 @@ int UnitAgent::friendlyUnitsWithinRange(int maxRange)
 int UnitAgent::friendlyUnitsWithinRange(TilePosition tilePos, int maxRange)
 {
 	int fCnt = 0;
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 		BaseAgent* agent = agents.at(i);
@@ -610,7 +610,7 @@ bool UnitAgent::chargeShields()
 	if (cShields < maxShields)
 	{
 		//Shields are damaged
-		BaseAgent* charger = AgentManager::getInstance()->getClosestAgent(unit->getTilePosition(), UnitTypes::Protoss_Shield_Battery);
+		BaseAgent* charger = AgentManager::Instance().getClosestAgent(unit->getTilePosition(), UnitTypes::Protoss_Shield_Battery);
 		if (charger != NULL)
 		{
 			//Charger has energy

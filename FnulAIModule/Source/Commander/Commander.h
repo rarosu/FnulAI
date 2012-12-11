@@ -3,6 +3,7 @@
 
 #include <Commander\Squad.h>
 #include <MainAgents\BaseAgent.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -34,9 +35,12 @@ struct SortSquadList {
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class Commander {
+class Commander : public r2::Singleton<Commander> {
 
 private:
+	int lastCallFrame;
+
+
 	bool chokePointFortified(TilePosition center);
 	bool chokePointGuarded(TilePosition center);
 	void sortSquadList();
@@ -48,29 +52,29 @@ private:
 	void checkNoSquadUnits();
 	void assignUnit(BaseAgent* agent);
 
-	int lastCallFrame;
-
 protected:
 	vector<Squad*> squads;
 	int currentID;
-	static Commander* instance;
-
 	int currentState;
+
 	static const int DEFEND = 0;
 	static const int ATTACK = 1;
 
-	Commander();
-
+	
 	/** Used to find where offensive attackin ground squads are, so
 	 * air squads doesnt get ahead of other squads when attacking. */
 	TilePosition findOffensiveSquadPosition(TilePosition closeEnemy);
-
 public:
-	/** Destructor. */
+	/** The total killScore points of all own, destroyed units (not buildings). */
+	int ownDeadScore;
+
+	/** The total killScore points of all enemy, destroyed units (not buildings). */
+	int enemyDeadScore;
+
+
+	Commander();
 	~Commander();
 
-	/** Returns the instance of the class. */
-	static Commander* getInstance();
 
 	/** Called each update to issue orders. */
 	void computeActions();
@@ -156,12 +160,6 @@ public:
 
 	/** Assigns a worker to finish constructing an interrupted building. Terran only. */
 	void finishBuild(BaseAgent* agent);
-
-	/** The total killScore points of all own, destroyed units (not buildings). */
-	int ownDeadScore;
-
-	/** The total killScore points of all enemy, destroyed units (not buildings). */
-	int enemyDeadScore;
 
 	/** Adds a bunker squad when a Terran Bunker has been created. */
 	void addBunkerSquad();

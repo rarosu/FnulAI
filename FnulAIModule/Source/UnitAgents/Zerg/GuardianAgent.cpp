@@ -18,5 +18,5 @@ GuardianAgent::GuardianAgent(Unit* mUnit)
 void GuardianAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

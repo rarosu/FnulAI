@@ -15,7 +15,7 @@ HatcheryAgent::HatcheryAgent(Unit* mUnit)
 	//Broodwar->printf("New base created at (%d,%d)", unit->getTilePosition().x(), unit->getTilePosition().y());
 
 	hasSentWorkers = false;
-	if (AgentManager::getInstance()->countNoBases() == 0)
+	if (AgentManager::Instance().countNoBases() == 0)
 	{
 		//We dont do this for the first Nexus.
 		hasSentWorkers = true;
@@ -32,7 +32,7 @@ HatcheryAgent::HatcheryAgent(Unit* mUnit)
 	}
 	
 	agentType = "HatcheryAgent";
-	BuildPlanner::getInstance()->commandCenterBuilt();
+	BuildPlanner::Instance().commandCenterBuilt();
 }
 
 void HatcheryAgent::computeActions()
@@ -43,12 +43,12 @@ void HatcheryAgent::computeActions()
 		{
 			sendWorkers();
 			hasSentWorkers = true;
-			BuildPlanner::getInstance()->addRefinery();
+			BuildPlanner::Instance().addRefinery();
 
-			/*if (AgentManager::getInstance()->countNoUnits(UnitTypes::Zerg_Spawning_Pool) > 0)
+			/*if (AgentManager::Instance().countNoUnits(UnitTypes::Zerg_Spawning_Pool) > 0)
 			{
-				BuildPlanner::getInstance()->addBuildingFirst(UnitTypes::Zerg_Creep_Colony);
-				BuildPlanner::getInstance()->addBuildingFirst(UnitTypes::Zerg_Sunken_Colony);
+				BuildPlanner::Instance().addBuildingFirst(UnitTypes::Zerg_Creep_Colony);
+				BuildPlanner::Instance().addBuildingFirst(UnitTypes::Zerg_Sunken_Colony);
 			}*/
 		}
 	}
@@ -60,7 +60,7 @@ void HatcheryAgent::computeActions()
 	}
 	
 	//Build Overlords for supply
-	if (BuildPlanner::getInstance()->shallBuildSupply())
+	if (BuildPlanner::Instance().shallBuildSupply())
 	{
 		if (canBuild(UnitTypes::Zerg_Overlord))
 		{
@@ -78,7 +78,7 @@ void HatcheryAgent::computeActions()
 	if (checkBuildUnit(UnitTypes::Zerg_Scourge)) return;
 
 	//Create workers
-	if (ResourceManager::getInstance()->needWorker())
+	if (ResourceManager::Instance().needWorker())
 	{
 		UnitType worker = Broodwar->self()->getRace().getWorker();
 		if (canBuild(worker))
@@ -92,9 +92,9 @@ void HatcheryAgent::computeActions()
 	{
 		if (Broodwar->canMake(unit, UnitTypes::Zerg_Lair))
 		{
-			if (ResourceManager::getInstance()->hasResources(UnitTypes::Zerg_Lair))
+			if (ResourceManager::Instance().hasResources(UnitTypes::Zerg_Lair))
 			{
-				ResourceManager::getInstance()->lockResources(UnitTypes::Zerg_Lair);
+				ResourceManager::Instance().lockResources(UnitTypes::Zerg_Lair);
 				unit->morph(UnitTypes::Zerg_Lair);
 				return;
 			}
@@ -102,13 +102,13 @@ void HatcheryAgent::computeActions()
 	}
 	if (isOfType(UnitTypes::Zerg_Lair))
 	{
-		if (AgentManager::getInstance()->countNoUnits(UnitTypes::Zerg_Hive) < 2)
+		if (AgentManager::Instance().countNoUnits(UnitTypes::Zerg_Hive) < 2)
 		{
 			if (Broodwar->canMake(unit, UnitTypes::Zerg_Hive))
 			{
-				if (ResourceManager::getInstance()->hasResources(UnitTypes::Zerg_Hive))
+				if (ResourceManager::Instance().hasResources(UnitTypes::Zerg_Hive))
 				{
-					ResourceManager::getInstance()->lockResources(UnitTypes::Zerg_Hive);
+					ResourceManager::Instance().lockResources(UnitTypes::Zerg_Hive);
 					unit->morph(UnitTypes::Zerg_Hive);
 					return;
 				}
@@ -118,7 +118,7 @@ void HatcheryAgent::computeActions()
 	
 
 	//Check for upgrades
-	UpgradesPlanner::getInstance()->checkUpgrade(this);
+	UpgradesPlanner::Instance().checkUpgrade(this);
 }
 
 bool HatcheryAgent::checkBuildUnit(UnitType type)

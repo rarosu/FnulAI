@@ -3,6 +3,7 @@
 
 #include <BWAPI.h>
 #include <MainAgents\BaseAgent.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -17,26 +18,20 @@ using namespace std;
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class PFManager {
+class PFManager : public r2::Singleton<PFManager> {
 
 private:
-	PFManager();
-	static PFManager* instance;
-	static bool instanceFlag;
-
-	float getAttackingUnitP(BaseAgent* agent, int cX, int cY, bool defensive);
-	
 	int checkRange;
 	int stepSize;
 	int mapW;
 	int mapH;
 
+
+	float getAttackingUnitP(BaseAgent* agent, int cX, int cY, bool defensive);
 public:
-	/** Destructor */
+	PFManager();
 	~PFManager();
 
-	/** Returns the instance to the class. */
-	static PFManager* getInstance();
 
 	/** Is used to compute and execute movement commands for attacking units using the potential field
 	 * navigation system. */
@@ -49,7 +44,6 @@ public:
 	/** Moves a unit to the specified goal using the pathfinder, and stops at a distance where the
 	* potential field navigation system should be used instead. */
 	bool moveToGoal(BaseAgent* agent, TilePosition checkpoint, TilePosition goal);
-	
 };
 
 #endif

@@ -16,5 +16,5 @@ InfestedTerranAgent::InfestedTerranAgent(Unit* mUnit)
 void InfestedTerranAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

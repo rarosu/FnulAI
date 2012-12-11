@@ -2,6 +2,7 @@
 #define __CONFIG_H__
 
 #include <BWAPI.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -16,7 +17,7 @@ struct CTokens {
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class Config {
+class Config : public r2::Singleton<Config> {
 
 private:
 	string scriptPath;
@@ -32,16 +33,10 @@ private:
 
 	CTokens split(string line, string delimiter);
 	int toInt(string &str);
-
-	static Config* instance;
-	
-	Config();
-
 public:
+	Config();
 	~Config();
 
-	/** Returns class instance. */
-	static Config* getInstance();
 
 	/** Returns the path to the folder where the scripfiles are placed. */
 	string getScriptPath();

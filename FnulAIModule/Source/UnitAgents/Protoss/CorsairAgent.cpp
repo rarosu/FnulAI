@@ -17,5 +17,5 @@ CorsairAgent::CorsairAgent(Unit* mUnit)
 void CorsairAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

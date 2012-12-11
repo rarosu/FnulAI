@@ -4,8 +4,6 @@
 #include <fstream>
 #include <sstream>
 
-bool Pathfinder::instanceFlag = false;
-Pathfinder* Pathfinder::instance = NULL;
 
 Pathfinder::Pathfinder()
 {
@@ -18,23 +16,17 @@ Pathfinder::Pathfinder()
 Pathfinder::~Pathfinder()
 {
 	running = false;
-	while (!end);
+	while (!end)
+	{
+		Sleep(1);
+	}
 
 	for (int i = 0; i < (int)pathObj.size(); i++)
 	{	
-		//delete pathObj.at(i);
+		delete pathObj.at(i);
 	}
 }
 
-Pathfinder* Pathfinder::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new Pathfinder();
-		instanceFlag = true;
-	}
-	return instance;
-}
 
 PathObj* Pathfinder::getPathObj(TilePosition start, TilePosition end)
 {

@@ -18,5 +18,5 @@ VultureAgent::VultureAgent(Unit* mUnit)
 void VultureAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

@@ -8,7 +8,6 @@
 #include <Utils\Profiler.h>
 #include <algorithm>
 
-Commander* Commander::instance = NULL;
 
 Commander::Commander()
 {
@@ -27,24 +26,12 @@ Commander::Commander()
 
 Commander::~Commander()
 {
-	/*
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
 		delete squads.at(i);
 	}
-	*/
-	
-	//delete instance;
 }
 
-Commander* Commander::getInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new Commander();
-	}
-	return instance;
-}
 
 void Commander::computeActions()
 {
@@ -196,7 +183,7 @@ bool Commander::isLaunchingAttack()
 
 void Commander::checkNoSquadUnits()
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -264,10 +251,10 @@ TilePosition Commander::getClosestEnemyBuilding(TilePosition start)
 		return closestBuilding->getTilePosition();
 	}
 
-	if (ExplorationManager::getInstance()->isActive())
+	if (ExplorationManager::Instance().isActive())
 	{
 		bestDist = -1;
-		vector<SpottedObject*> units = ExplorationManager::getInstance()->getSpottedBuildings();
+		vector<SpottedObject*> units = ExplorationManager::Instance().getSpottedBuildings();
 		for (int i = 0; i < (int)units.size(); i++)
 		{
 			SpottedObject* obj = units.at(i);
@@ -310,7 +297,7 @@ void Commander::handleCloakedEnemy(TilePosition pos, Squad* squad)
 	}
 	if (BuildPlanner::isTerran())
 	{
-		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		if ((int)agents.size() > 0)
 		{
 			bool ok = agents.at(0)->doScannerSweep(pos);
@@ -382,7 +369,7 @@ void Commander::checkRemovableObstacles()
 		if ((*m)->getResources() <= 20)
 		{
 			//Found a mineral that we can remove.
-			BaseAgent* baseAgent = AgentManager::getInstance()->getClosestBase((*m)->getTilePosition());
+			BaseAgent* baseAgent = AgentManager::Instance().getClosestBase((*m)->getTilePosition());
 			if (baseAgent != NULL)
 			{
 				double cDist = baseAgent->getUnit()->getDistance((*m));
@@ -392,7 +379,7 @@ void Commander::checkRemovableObstacles()
 
 					//Step 1: Check if someone already is working on it
 					bool assign = true;
-					vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+					vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 					for (int i = 0; i < (int)agents.size(); i++)
 					{
 						BaseAgent* agent = agents.at(i);
@@ -413,7 +400,7 @@ void Commander::checkRemovableObstacles()
 
 					if (assign)
 					{
-						BaseAgent* worker = AgentManager::getInstance()->findClosestFreeWorker((*m)->getTilePosition());
+						BaseAgent* worker = AgentManager::Instance().findClosestFreeWorker((*m)->getTilePosition());
 						if (worker != NULL)
 						{
 							worker->getUnit()->rightClick((*m));
@@ -462,7 +449,7 @@ TilePosition Commander::findUnfortifiedChokePoint()
 
 bool Commander::chokePointFortified(TilePosition center)
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		if (agents.at(i)->isAlive())
@@ -482,7 +469,7 @@ bool Commander::chokePointFortified(TilePosition center)
 
 double Commander::getChokepointPrio(TilePosition center)
 {
-	TilePosition ePos = ExplorationManager::getInstance()->getClosestSpottedBuilding(center);
+	TilePosition ePos = ExplorationManager::Instance().getClosestSpottedBuilding(center);
 
 	if (ePos.x() >= 0)
 	{
@@ -584,7 +571,7 @@ bool Commander::isEdgeChokepoint(Chokepoint* choke)
 bool Commander::isOccupied(Region* region)
 {
 	BWTA::Polygon p = region->getPolygon();
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -601,7 +588,7 @@ bool Commander::isOccupied(Region* region)
 	}
 
 	//Check expansion site
-	TilePosition expansionSite = ExplorationManager::getInstance()->getExpansionSite();
+	TilePosition expansionSite = ExplorationManager::Instance().getExpansionSite();
 	TilePosition center = TilePosition(region->getCenter());
 	if (expansionSite.x() >= 0)
 	{
@@ -640,7 +627,7 @@ bool Commander::chokePointGuarded(TilePosition center)
 
 bool Commander::isPowered(TilePosition pos)
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -658,7 +645,7 @@ bool Commander::isPowered(TilePosition pos)
 
 bool Commander::isBuildable(TilePosition pos)
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -844,7 +831,7 @@ void Commander::forceAttack()
 
 bool Commander::checkRepairUnits()
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++) 
 	{
 		BaseAgent* agent = agents.at(i);
@@ -873,12 +860,12 @@ void Commander::repair(BaseAgent* agent)
 {
 	
 	//First we must check if someone is repairing this building
-	if(AgentManager::getInstance()->isAnyAgentRepairingThisAgent(agent))
+	if(AgentManager::Instance().isAnyAgentRepairingThisAgent(agent))
 	{
 		return;
 	}
 
-	BaseAgent* repUnit = AgentManager::getInstance()->findClosestFreeWorker(agent->getUnit()->getTilePosition());
+	BaseAgent* repUnit = AgentManager::Instance().findClosestFreeWorker(agent->getUnit()->getTilePosition());
 	if (repUnit != NULL)
 	{
 		//Broodwar->printf("Assigned SCV %d to repair %s (%d/%d)", repUnit->getUnitID(), agent->getUnitType().getName().c_str(), agent->getUnit()->getHitPoints(), agent->getUnitType().maxHitPoints());
@@ -889,10 +876,10 @@ void Commander::repair(BaseAgent* agent)
 void Commander::finishBuild(BaseAgent* baseAgent)
 {
 	//First we must check if someone is repairing this building
-	if(AgentManager::getInstance()->isAnyAgentRepairingThisAgent(baseAgent))
+	if(AgentManager::Instance().isAnyAgentRepairingThisAgent(baseAgent))
 		return;
 
-	BaseAgent* repUnit = AgentManager::getInstance()->findClosestFreeWorker(baseAgent->getUnit()->getTilePosition());
+	BaseAgent* repUnit = AgentManager::Instance().findClosestFreeWorker(baseAgent->getUnit()->getTilePosition());
 	if (repUnit != NULL)
 	{
 		repUnit->assignToFinishBuild(baseAgent->getUnit());
@@ -901,7 +888,7 @@ void Commander::finishBuild(BaseAgent* baseAgent)
 
 bool Commander::checkUnfinishedBuildings()
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -938,7 +925,7 @@ void Commander::printInfo()
 
 void Commander::addBunkerSquad()
 {
-	Squad* bSquad = new Squad(100 + AgentManager::getInstance()->countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 5);
+	Squad* bSquad = new Squad(100 + AgentManager::Instance().countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 5);
 	bSquad->addSetup(UnitTypes::Terran_Marine, 4);
 	squads.push_back(bSquad);
 

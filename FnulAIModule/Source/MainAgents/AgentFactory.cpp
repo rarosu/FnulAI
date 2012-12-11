@@ -47,8 +47,6 @@
 #include <UnitAgents\Zerg\ScourgeAgent.h>
 #include <UnitAgents\Zerg\InfestedTerranAgent.h>
 
-bool AgentFactory::instanceFlag = false;
-AgentFactory* AgentFactory::instance = NULL;
 
 AgentFactory::AgentFactory()
 {
@@ -57,18 +55,9 @@ AgentFactory::AgentFactory()
 
 AgentFactory::~AgentFactory()
 {
-	instanceFlag = false;
+
 }
 
-AgentFactory* AgentFactory::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new AgentFactory();
-		instanceFlag = true;
-	}
-	return instance;
-}
 
 BaseAgent* AgentFactory::createAgent(Unit* unit)
 {
@@ -215,7 +204,7 @@ BaseAgent* AgentFactory::createTerranAgent(Unit* unit)
 		}
 		else if (isOfType(unit, UnitTypes::Terran_Bunker))
 		{
-			Commander::getInstance()->addBunkerSquad();
+			Commander::Instance().addBunkerSquad();
 			return new StructureAgent(unit);
 		}
 		else

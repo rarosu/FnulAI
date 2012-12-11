@@ -18,7 +18,7 @@ TransportAgent::TransportAgent(Unit* mUnit)
 
 int TransportAgent::getCurrentLoad()
 {
-	Squad* sq = Commander::getInstance()->getSquad(squadID);
+	Squad* sq = Commander::Instance().getSquad(squadID);
 	if (sq != NULL)
 	{
 		int load = 0;
@@ -57,7 +57,7 @@ BaseAgent* TransportAgent::findUnitToLoad(int spaceLimit)
 	BaseAgent* agent = NULL;
 	double bestDist = 100000;
 
-	Squad* sq = Commander::getInstance()->getSquad(squadID);
+	Squad* sq = Commander::Instance().getSquad(squadID);
 	if (sq != NULL)
 	{
 		vector<BaseAgent*> agents = sq->getMembers();
@@ -109,5 +109,5 @@ void TransportAgent::computeActions()
 	}
 
 	bool defensive = true;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

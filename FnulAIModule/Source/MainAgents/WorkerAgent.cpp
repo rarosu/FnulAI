@@ -30,8 +30,8 @@ void WorkerAgent::destroyed()
 		if (!BuildPlanner::isZerg())
 		{
 			//Broodwar->printf("Worker building %s destroyed", toBuild.getName().c_str());
-			BuildPlanner::getInstance()->handleWorkerDestroyed(toBuild, unitID);
-			CoverMap::getInstance()->clearTemp(toBuild, buildSpot);
+			BuildPlanner::Instance().handleWorkerDestroyed(toBuild, unitID);
+			CoverMap::Instance().clearTemp(toBuild, buildSpot);
 			setState(GATHER_MINERALS);
 		}
 	}
@@ -97,10 +97,10 @@ Unit* WorkerAgent::getEnemyWorker()
 void WorkerAgent::handleKitingWorker()
 {
 	//Kite them around
-	/*Squad* sq = Commander::getInstance()->getSquad(squadID);
+	/*Squad* sq = Commander::Instance().getSquad(squadID);
 	if (sq != NULL)
 	{
-		TilePosition nGoal = ExplorationManager::getInstance()->getNextToExplore(sq);
+		TilePosition nGoal = ExplorationManager::Instance().getNextToExplore(sq);
 		if (nGoal.x() >= 0)
 		{
 			unit->rightClick(Position(nGoal));
@@ -175,7 +175,7 @@ void WorkerAgent::computeActions()
 	if (squadID != -1)
 	{
 		//Worker is in a squad
-		PFManager::getInstance()->computeAttackingUnitActions(this, goal, false);
+		PFManager::Instance().computeAttackingUnitActions(this, goal, false);
 		return;
 	}
 	//Check if workers are too far away from a base when attacking
@@ -183,7 +183,7 @@ void WorkerAgent::computeActions()
 	{
 		if (unit->getTarget() != NULL)
 		{
-			BaseAgent* base = AgentManager::getInstance()->getClosestBase(unit->getTilePosition());
+			BaseAgent* base = AgentManager::Instance().getClosestBase(unit->getTilePosition());
 			if (base != NULL)
 			{
 				double dist = base->getUnit()->getTilePosition().getDistance(unit->getTilePosition());
@@ -219,7 +219,7 @@ void WorkerAgent::computeActions()
 		if (!unit->isRepairing())
 		{
 			setState(GATHER_MINERALS);
-			BaseAgent* base = AgentManager::getInstance()->getClosestBase(unit->getTilePosition());
+			BaseAgent* base = AgentManager::Instance().getClosestBase(unit->getTilePosition());
 			if (base != NULL)
 			{
 				unit->rightClick(base->getUnit());
@@ -236,7 +236,7 @@ void WorkerAgent::computeActions()
 	{
 		if (unit->isIdle())
 		{
-			Unit* mineral = CoverMap::getInstance()->findClosestMineral(unit->getTilePosition());
+			Unit* mineral = CoverMap::Instance().findClosestMineral(unit->getTilePosition());
 			if (mineral != NULL)
 			{
 				unit->rightClick(mineral);
@@ -246,8 +246,8 @@ void WorkerAgent::computeActions()
 
 	if (currentState == FIND_BUILDSPOT)
 	{
-		CoverMap::getInstance()->clearTemp(toBuild, buildSpot);
-		buildSpot = CoverMap::getInstance()->findBuildSpot(toBuild);
+		CoverMap::Instance().clearTemp(toBuild, buildSpot);
+		buildSpot = CoverMap::Instance().findBuildSpot(toBuild);
 		if (buildSpot.x() >= 0)
 		{
 			//Broodwar->printf("[%d] Build spot for %s found at (%d,%d)", Broodwar->getFrameCount(), toBuild.getName().c_str(), buildSpot.x(), buildSpot.y());
@@ -255,14 +255,14 @@ void WorkerAgent::computeActions()
 			startBuildFrame = Broodwar->getFrameCount();
 			if (toBuild.isResourceDepot())
 			{
-				Commander::getInstance()->updateGoals();
+				Commander::Instance().updateGoals();
 			}
 		}
 	}
 
 	if (currentState == MOVE_TO_SPOT)
 	{
-		CoverMap::getInstance()->fillTemp(toBuild, buildSpot);
+		CoverMap::Instance().fillTemp(toBuild, buildSpot);
 		if (!buildSpotExplored())
 		{
 			//Broodwar->printf("[%d] moving to spot (%d,%d) dist=%d", unitID, buildSpot.x(), buildSpot.y());
@@ -278,7 +278,7 @@ void WorkerAgent::computeActions()
 				bool ok = unit->build(buildSpot, toBuild);
 				if (!ok)
 				{
-					CoverMap::getInstance()->blockPosition(buildSpot);
+					CoverMap::Instance().blockPosition(buildSpot);
 					//Cant build at selected spot, get a new one.
 					setState(FIND_BUILDSPOT);
 				}
@@ -303,7 +303,7 @@ void WorkerAgent::computeActions()
 		if (isBuilt())
 		{
 			//Build finished.
-			BaseAgent* agent = AgentManager::getInstance()->getClosestBase(unit->getTilePosition());
+			BaseAgent* agent = AgentManager::Instance().getClosestBase(unit->getTilePosition());
 			if (agent != NULL)
 			{
 				unit->rightClick(agent->getUnit()->getPosition());
@@ -335,7 +335,7 @@ bool WorkerAgent::areaFree()
 		return true;
 	}
 
-	if (AgentManager::getInstance()->unitsInArea(buildSpot, toBuild.tileWidth(), toBuild.tileHeight(), unit->getID()))
+	if (AgentManager::Instance().unitsInArea(buildSpot, toBuild.tileWidth(), toBuild.tileHeight(), unit->getID()))
 	{
 		return false;
 	}
@@ -422,10 +422,10 @@ bool WorkerAgent::canBuild(UnitType type)
 bool WorkerAgent::assignToBuild(UnitType type)
 {
 	toBuild = type;
-	buildSpot = CoverMap::getInstance()->findBuildSpot(toBuild);
+	buildSpot = CoverMap::Instance().findBuildSpot(toBuild);
 	if (buildSpot.x() >= 0)
 	{
-		ResourceManager::getInstance()->lockResources(toBuild);
+		ResourceManager::Instance().lockResources(toBuild);
 		setState(FIND_BUILDSPOT);
 		return true;
 	}
@@ -442,7 +442,7 @@ void WorkerAgent::reset()
 	if (currentState == MOVE_TO_SPOT)
 	{
 		//The buildSpot is probably not reachable. Block it.	
-		CoverMap::getInstance()->blockPosition(buildSpot);
+		CoverMap::Instance().blockPosition(buildSpot);
 	}
 
 	if (unit->isConstructing())
@@ -452,7 +452,7 @@ void WorkerAgent::reset()
 
 	setState(GATHER_MINERALS);
 	unit->stop();
-	BaseAgent* base = AgentManager::getInstance()->getClosestBase(unit->getTilePosition());
+	BaseAgent* base = AgentManager::Instance().getClosestBase(unit->getTilePosition());
 	if (base != NULL)
 	{
 		unit->rightClick(base->getUnit()->getPosition());

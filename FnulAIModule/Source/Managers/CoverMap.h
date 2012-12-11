@@ -3,6 +3,7 @@
 
 #include <UnitAgents\UnitAgent.h>
 #include <Managers\MapDataReader.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -28,17 +29,15 @@ struct Corners {
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class CoverMap {
+class CoverMap : public r2::Singleton<CoverMap> {
 
 private:
-	CoverMap();
-	static CoverMap* instance;
-	static bool instanceFlag;
-
 	int range;
 	int w;
 	int h;
 	int** cover_map;
+	MapDataReader mapData;
+
 
 	Corners getCorners(Unit* unit);
 	Corners getCorners(UnitType type, TilePosition center);
@@ -53,19 +52,14 @@ private:
 
 	bool suitableForDetector(TilePosition pos);
 
-	MapDataReader mapData;
-
 	bool baseUnderConstruction(BaseAgent* base);
 	TilePosition findBuildSpot(UnitType toBuild, TilePosition start);
 
 	Unit* hasMineralNear(TilePosition pos);
-
 public:
-	/** Destructor */
+	CoverMap();
 	~CoverMap();
 
-	/** Returns the instance of the class. */
-	static CoverMap* getInstance();
 
 	/** Adds a newly constructed building to the cover map. */
 	void addConstructedBuilding(Unit* unit);

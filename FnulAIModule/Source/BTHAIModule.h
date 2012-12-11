@@ -1,7 +1,19 @@
 #pragma once
 
-#include <Utils\Logger.h>
+#include <Commander\Commander.h>
+#include <MainAgents\AgentFactory.h>
 #include <Managers\AgentManager.h>
+#include <Managers\BuildPlanner.h>
+#include <Managers\CoverMap.h>
+#include <Managers\ExplorationManager.h>
+#include <Managers\ResourceManager.h>
+#include <Managers\UpgradesPlanner.h>
+#include <PotentialFields\PFManager.h>
+#include <Utils\Pathfinder.h>
+#include <Utils\Profiler.h>
+#include <Utils\Config.h>
+#include <Utils\Logger.h>
+
 #include <Statistics\Statistics.h>
 #include <AIloop.h>
 
@@ -10,9 +22,11 @@
 #include <time.h>
 #include <BWTAExtern.h>
 
+
 #define TOURNAMENT_NAME "AIIDE 2011"
 #define SPONSORS "the BWAPI Project Team"
 #define MINIMUM_COMMAND_OPTIMIZATION 1
+
 
 // TODO: Look into if we need to use this...
 class BTHAITournamentModule : public BWAPI::TournamentModule
@@ -21,8 +35,10 @@ class BTHAITournamentModule : public BWAPI::TournamentModule
 	virtual void onFirstAdvertisement();
 };
 
+
 // TODO: Move to the source file?
 DWORD WINAPI AnalyzeThread();
+
 
 /** This class contains the main game loop and all events that is broadcasted from the Starcraft engine
  * using BWAPI. See the BWAPI documentation for more info. 
@@ -34,17 +50,30 @@ class BTHAIModule : public BWAPI::AIModule
 {
 private:
 	int speed;
-	Statistics* statistics;
-	AIloop* loop;
-	Logger m_logger;
 	bool running;
 	bool profile;
 
+	Statistics* statistics;
+	AIloop* loop;
+
+
+	Logger m_logger;
+	Config m_config;
+	Profiler m_profiler;
+
+	Commander m_commander;
+	AgentFactory m_agentFactory;
+	AgentManager m_agentManager;
+	BuildPlanner m_buildPlanner;
+	CoverMap m_coverMap;
+	ExplorationManager m_explorationManager;
+	ResourceManager m_resourceManager;
+	UpgradesPlanner m_upgradesPlanner;
+	PFManager m_pfManager;
+	Pathfinder m_pathfinder;
 
 	void gameStopped();
-
 public:
-	// TODO: Add constructor & destructor and implement RAII
 	BTHAIModule();
 	~BTHAIModule();
 

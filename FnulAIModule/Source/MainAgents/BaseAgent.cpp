@@ -103,7 +103,7 @@ bool BaseAgent::canBuild(UnitType type)
 	}
 
 	//2. Check if we have enough resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
@@ -216,7 +216,7 @@ bool BaseAgent::doScannerSweep(TilePosition pos)
 		return false;
 	}
 
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -244,7 +244,7 @@ bool BaseAgent::doEnsnare(TilePosition pos)
 		return false;
 	}
 
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);

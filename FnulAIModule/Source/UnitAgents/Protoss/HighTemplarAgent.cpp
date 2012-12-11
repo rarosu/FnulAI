@@ -17,6 +17,6 @@ HighTemplarAgent::HighTemplarAgent(Unit* mUnit)
 void HighTemplarAgent::computeActions()
 {
 	bool defensive = true;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }
 

@@ -14,14 +14,14 @@ CommandCenterAgent::CommandCenterAgent(Unit* mUnit)
 	//Broodwar->printf("New base created at (%d,%d)", unit->getTilePosition().x(), unit->getTilePosition().y());
 
 	hasSentWorkers = false;
-	if (AgentManager::getInstance()->countNoUnits(UnitTypes::Terran_Command_Center) == 0)
+	if (AgentManager::Instance().countNoUnits(UnitTypes::Terran_Command_Center) == 0)
 	{
 		//We dont do this for the first Command Center.
 		hasSentWorkers = true;
 	}
 
 	agentType = "CommandCenterAgent";
-	BuildPlanner::getInstance()->commandCenterBuilt();
+	BuildPlanner::Instance().commandCenterBuilt();
 }
 
 void CommandCenterAgent::computeActions()
@@ -33,15 +33,15 @@ void CommandCenterAgent::computeActions()
 			sendWorkers();
 			hasSentWorkers = true;
 
-			BuildPlanner::getInstance()->addRefinery();
+			BuildPlanner::Instance().addRefinery();
 
-			if (AgentManager::getInstance()->countNoUnits(UnitTypes::Terran_Barracks) > 0)
+			if (AgentManager::Instance().countNoUnits(UnitTypes::Terran_Barracks) > 0)
 			{
-				BuildPlanner::getInstance()->addBuildingFirst(UnitTypes::Terran_Bunker);
+				BuildPlanner::Instance().addBuildingFirst(UnitTypes::Terran_Bunker);
 			}
-			if (AgentManager::getInstance()->countNoUnits(UnitTypes::Terran_Engineering_Bay) > 0)
+			if (AgentManager::Instance().countNoUnits(UnitTypes::Terran_Engineering_Bay) > 0)
 			{
-				BuildPlanner::getInstance()->addBuildingFirst(UnitTypes::Terran_Missile_Turret);
+				BuildPlanner::Instance().addBuildingFirst(UnitTypes::Terran_Missile_Turret);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ void CommandCenterAgent::computeActions()
 		}
 	}
 
-	if (ResourceManager::getInstance()->needWorker())
+	if (ResourceManager::Instance().needWorker())
 	{
 		UnitType worker = Broodwar->self()->getRace().getWorker();
 		if (canBuild(worker))

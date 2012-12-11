@@ -4,8 +4,6 @@
 #include <Managers\AgentManager.h>
 #include <Managers\ResourceManager.h>
 
-UpgradesPlanner* UpgradesPlanner::instance = NULL;
-
 UpgradesPlanner::UpgradesPlanner()
 {
 	UpgradesFileReader ufr = UpgradesFileReader();
@@ -24,14 +22,6 @@ UpgradesPlanner::~UpgradesPlanner()
 
 }
 
-UpgradesPlanner* UpgradesPlanner::getInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new UpgradesPlanner();
-	}
-	return instance;
-}
 
 bool UpgradesPlanner::checkUpgrade(BaseAgent* agent)
 {
@@ -156,7 +146,7 @@ bool UpgradesPlanner::canUpgrade(UpgradeType type, Unit* unit)
 	}
 
 	//3. Check if we have enough resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
@@ -168,7 +158,7 @@ bool UpgradesPlanner::canUpgrade(UpgradeType type, Unit* unit)
 	}
 
 	//5. Check if some other building is already doing this upgrade
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		if (agents.at(i)->getUnit()->getUpgrade().getID() == type.getID())
@@ -196,7 +186,7 @@ bool UpgradesPlanner::canResearch(TechType type, Unit* unit)
 	}
 	
 	//2. Check if we have enough resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
@@ -214,7 +204,7 @@ bool UpgradesPlanner::canResearch(TechType type, Unit* unit)
 	}
 
 	//5. Check if some other building is already doing this upgrade
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		if (agents.at(i)->getUnit()->getTech().getID() == type.getID())

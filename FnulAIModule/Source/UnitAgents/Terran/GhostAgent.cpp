@@ -17,5 +17,5 @@ GhostAgent::GhostAgent(Unit* mUnit)
 void GhostAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

@@ -8,9 +8,6 @@
 #include <Managers\CoverMap.h>
 #include <Utils\Profiler.h>
 
-bool PFManager::instanceFlag = false;
-PFManager* PFManager::instance = NULL;
-
 PFManager::PFManager()
 {
 	checkRange = 48;
@@ -21,18 +18,9 @@ PFManager::PFManager()
 
 PFManager::~PFManager()
 {
-	instanceFlag = false;
+
 }
 
-PFManager* PFManager::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new PFManager();
-		instanceFlag = true;
-	}
-	return instance;
-}
 
 void PFManager::computeAttackingUnitActions(BaseAgent* agent, TilePosition goal, bool defensive)
 {
@@ -99,7 +87,7 @@ void PFManager::computeAttackingUnitActions(BaseAgent* agent, TilePosition goal,
 	TilePosition checkpoint = goal;
 	if (agent->getSquadID() >= 0)
 	{
-		Squad* sq = Commander::getInstance()->getSquad(agent->getSquadID());
+		Squad* sq = Commander::Instance().getSquad(agent->getSquadID());
 		if (sq != NULL)
 		{
 			checkpoint = sq->nextMovePosition();
@@ -192,7 +180,7 @@ float PFManager::getAttackingUnitP(BaseAgent* agent, int cX, int cY, bool defens
 	}
 	
 	//Own Units
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		if (agents.at(i)->isAlive())

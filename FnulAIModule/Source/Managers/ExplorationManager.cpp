@@ -6,9 +6,6 @@
 #include <Commander\Squad.h>
 #include <Managers\CoverMap.h>
 
-bool ExplorationManager::instanceFlag = false;
-ExplorationManager* ExplorationManager::instance = NULL;
-
 ExplorationManager::ExplorationManager()
 {
 	active = true;
@@ -31,14 +28,13 @@ ExplorationManager::ExplorationManager()
 
 ExplorationManager::~ExplorationManager()
 {
-	
 	for (int i = 0; i < (int)spottedBuildings.size(); i++)
 	{
-		//delete spottedBuildings.at(i);
+		delete spottedBuildings.at(i);
 	}
-	
-	instanceFlag = false;
 }
+
+
 
 void ExplorationManager::setInactive()
 {
@@ -50,15 +46,6 @@ bool ExplorationManager::isActive()
 	return active;
 }
 
-ExplorationManager* ExplorationManager::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new ExplorationManager();
-		instanceFlag = true;
-	}
-	return instance;
-}
 
 void ExplorationManager::computeActions()
 {
@@ -88,7 +75,7 @@ TilePosition ExplorationManager::searchExpansionSite()
 
 	if (expansionSite.x() == -1)
 	{
-		expansionSite = CoverMap::getInstance()->findExpansionSite();
+		expansionSite = CoverMap::Instance().findExpansionSite();
 		siteSetFrame = Broodwar->getFrameCount();
 		//Broodwar->printf("Found expansion site around (%d,%d)", expansionSite.x(), expansionSite.y());
 	}
@@ -256,7 +243,7 @@ void ExplorationManager::calcOwnForceData()
 {
 	ownForce.reset();
 
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		if (agents.at(i)->isAlive())

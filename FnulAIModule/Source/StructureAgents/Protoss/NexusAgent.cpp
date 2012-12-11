@@ -14,13 +14,13 @@ NexusAgent::NexusAgent(Unit* mUnit)
 	//Broodwar->printf("New base created at (%d,%d)", unit->getTilePosition().x(), unit->getTilePosition().y());
 
 	hasSentWorkers = false;
-	if (AgentManager::getInstance()->countNoUnits(UnitTypes::Protoss_Nexus) == 0)
+	if (AgentManager::Instance().countNoUnits(UnitTypes::Protoss_Nexus) == 0)
 	{
 		//We dont do this for the first Nexus.
 		hasSentWorkers = true;
 	}
 	
-	BuildPlanner::getInstance()->commandCenterBuilt();
+	BuildPlanner::Instance().commandCenterBuilt();
 }
 
 void NexusAgent::computeActions()
@@ -32,12 +32,12 @@ void NexusAgent::computeActions()
 			sendWorkers();
 			hasSentWorkers = true;
 
-			BuildPlanner::getInstance()->addRefinery();
+			BuildPlanner::Instance().addRefinery();
 
-			if (AgentManager::getInstance()->countNoUnits(UnitTypes::Protoss_Forge) > 0)
+			if (AgentManager::Instance().countNoUnits(UnitTypes::Protoss_Forge) > 0)
 			{
-				BuildPlanner::getInstance()->addBuildingFirst(UnitTypes::Protoss_Pylon);
-				BuildPlanner::getInstance()->addBuildingFirst(UnitTypes::Protoss_Photon_Cannon);
+				BuildPlanner::Instance().addBuildingFirst(UnitTypes::Protoss_Pylon);
+				BuildPlanner::Instance().addBuildingFirst(UnitTypes::Protoss_Photon_Cannon);
 			}
 		}
 	}
@@ -48,7 +48,7 @@ void NexusAgent::computeActions()
 		return;
 	}
 
-	if (ResourceManager::getInstance()->needWorker())
+	if (ResourceManager::Instance().needWorker())
 	{
 		UnitType worker = Broodwar->self()->getRace().getWorker();
 		if (canBuild(worker))

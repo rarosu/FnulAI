@@ -18,7 +18,7 @@ OverlordAgent::OverlordAgent(Unit* mUnit)
 
 void OverlordAgent::updateGoal()
 {
-	BaseAgent* agent = AgentManager::getInstance()->getClosestBase(unit->getTilePosition());
+	BaseAgent* agent = AgentManager::Instance().getClosestBase(unit->getTilePosition());
 	if (agent != NULL)
 	{
 		goal = agent->getUnit()->getTilePosition();
@@ -36,5 +36,5 @@ void OverlordAgent::computeActions()
 		}
 	}
 
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, true);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, true);
 }

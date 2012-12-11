@@ -4,6 +4,7 @@
 #include <MainAgents\BaseAgent.h>
 #include <Utils\PathObj.h>
 #include <Utils\cthread.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -17,28 +18,22 @@ using namespace std;
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class Pathfinder : public CThread {
+class Pathfinder : public r2::Singleton<Pathfinder>, public CThread {
 
 private:
-	Pathfinder();
-	static Pathfinder* instance;
-	static bool instanceFlag;
+	
 	bool running;
 	bool lock;
 	bool end;
-
 	vector<PathObj*> pathObj;
 
+
 	PathObj* getPathObj(TilePosition start, TilePosition end);
-
 	bool isRunning();
-
 public:
-	/** Destructor */
+	Pathfinder();
 	~Pathfinder();
 
-	/** Returns the instance of the class. */
-	static Pathfinder* getInstance();
 
 	/** Returns the ground distance between two positions. */
 	int getDistance(TilePosition start, TilePosition end);

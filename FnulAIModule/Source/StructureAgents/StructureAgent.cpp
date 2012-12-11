@@ -124,7 +124,7 @@ void StructureAgent::computeActions()
 			return;
 		}
 
-		if (UpgradesPlanner::getInstance()->checkUpgrade(this))
+		if (UpgradesPlanner::Instance().checkUpgrade(this))
 		{
 			return;
 		}
@@ -212,7 +212,7 @@ bool StructureAgent::canBuildUnit(UnitType type)
 	}
 
 	//3. Check if we need the unit in a squad
-	if (!Commander::getInstance()->needUnit(type))
+	if (!Commander::Instance().needUnit(type))
 	{
 		return false;
 	}
@@ -224,7 +224,7 @@ bool StructureAgent::canBuildUnit(UnitType type)
 	}
 
 	//5. Check if we have enough resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
@@ -241,12 +241,12 @@ void StructureAgent::printInfo()
 void StructureAgent::sendWorkers()
 {
 	//We have constructed a new base. Make some workers move here.
-	int noWorkers = AgentManager::getInstance()->getNoWorkers();
-	int toSend = noWorkers / AgentManager::getInstance()->countNoBases();
+	int noWorkers = AgentManager::Instance().getNoWorkers();
+	int toSend = noWorkers / AgentManager::Instance().countNoBases();
 	int hasSent = 0;
 
 	//Broodwar->printf("Sending %d/%d workers to new base", toSend, noWorkers);
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -274,7 +274,7 @@ bool StructureAgent::canMorphInto(UnitType type)
 	}
 	
 	//2. Check if we have enough resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
@@ -292,7 +292,7 @@ bool StructureAgent::canMorphInto(UnitType type)
 bool StructureAgent::canEvolveUnit(UnitType type)
 {
 	//1. Check if we need the unit in a squad
-	if (!Commander::getInstance()->needUnit(type))
+	if (!Commander::Instance().needUnit(type))
 	{
 		return false;
 	}
@@ -304,7 +304,7 @@ bool StructureAgent::canEvolveUnit(UnitType type)
 	}
 
 	//3. Check if we have enough resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
@@ -315,7 +315,7 @@ bool StructureAgent::canEvolveUnit(UnitType type)
 
 TilePosition StructureAgent::getNextScanLocation()
 {
-	TilePosition ePos = ExplorationManager::getInstance()->getClosestSpottedBuilding(Broodwar->self()->getStartLocation());
+	TilePosition ePos = ExplorationManager::Instance().getClosestSpottedBuilding(Broodwar->self()->getStartLocation());
 	if (ePos.x() > -1)
 	{
 		//Already found enemy base
@@ -338,7 +338,7 @@ TilePosition StructureAgent::getNextScanLocation()
 		}
 
 		//2. Check if we have this base
-		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 			if (agents.at(i)->isAlive())

@@ -19,5 +19,5 @@ MutaliskAgent::MutaliskAgent(Unit* mUnit)
 void MutaliskAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

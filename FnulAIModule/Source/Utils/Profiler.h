@@ -2,6 +2,7 @@
 #include <BWAPI.h>
 #include <MainAgents\BaseAgent.h>
 #include <Utils\ProfilerObj.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -20,22 +21,17 @@ using namespace std;
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class Profiler {
+class Profiler : public r2::Singleton<Profiler> {
 
 	private:
 		vector<ProfilerObj*> obj;
 		ProfilerObj* getObj(string mId);
 
-		Profiler();
-		static Profiler* instance;
-		static bool instanceFlag;
-
+		
 	public:
-		/** Destructor */
+		Profiler();
 		~Profiler();
 
-		/** Returns the instance of the class. */
-		static Profiler* getInstance();
 
 		/** Starts measuring. Put at beginning of a codeblock. 
 		 * Make sure the startiId is the same as the end id. */

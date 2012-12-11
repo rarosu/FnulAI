@@ -4,8 +4,6 @@
 #include <Commander\Commander.h>
 #include <Commander\Squad.h>
 
-ResourceManager* ResourceManager::instance = NULL;
-
 ResourceManager::ResourceManager()
 {
 	locks.push_back(ResourceLock(Broodwar->self()->getRace().getCenter()));
@@ -16,28 +14,20 @@ ResourceManager::~ResourceManager()
 
 }
 
-ResourceManager* ResourceManager::getInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new ResourceManager();
-	}
-	return instance;
-}
 
 bool ResourceManager::hasProductionBuilding()
 {
 	if (BuildPlanner::isTerran())
 	{
-		if (AgentManager::getInstance()->countNoUnits(UnitTypes::Terran_Barracks) > 0) return true;
+		if (AgentManager::Instance().countNoUnits(UnitTypes::Terran_Barracks) > 0) return true;
 	}
 	if (BuildPlanner::isProtoss())
 	{
-		if (AgentManager::getInstance()->countNoUnits(UnitTypes::Protoss_Gateway) > 0) return true;
+		if (AgentManager::Instance().countNoUnits(UnitTypes::Protoss_Gateway) > 0) return true;
 	}
 	if (BuildPlanner::isZerg())
 	{
-		if (AgentManager::getInstance()->countNoUnits(UnitTypes::Zerg_Hydralisk_Den) > 0) return true;
+		if (AgentManager::Instance().countNoUnits(UnitTypes::Zerg_Hydralisk_Den) > 0) return true;
 	}
 	return false;
 }
@@ -50,12 +40,12 @@ bool ResourceManager::needWorker()
 		workersPerBase = 10;
 	}
 
-	int noBases = AgentManager::getInstance()->countNoBases();
-	int noRefinery = AgentManager::getInstance()->countNoUnits(Broodwar->self()->getRace().getRefinery());
+	int noBases = AgentManager::Instance().countNoBases();
+	int noRefinery = AgentManager::Instance().countNoUnits(Broodwar->self()->getRace().getRefinery());
 	int idealNoWorkers = noBases * workersPerBase + noRefinery * 3;
 	if (idealNoWorkers > 60) idealNoWorkers = 60;
 
-	int noWorkers = AgentManager::getInstance()->getNoWorkers();
+	int noWorkers = AgentManager::Instance().getNoWorkers();
 	if (noWorkers < idealNoWorkers)
 	{
 		//Check if we have enough resources

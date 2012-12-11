@@ -4,6 +4,7 @@
 #include <BWAPI.h>
 #include <MainAgents\BaseAgent.h>
 #include <Utils\cthread.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -19,24 +20,16 @@ using namespace std;
  */
 
 // TODO: Reimplement singleton
-class AgentManager {
+class AgentManager : public r2::Singleton<AgentManager> {
 
 private:
 	vector<BaseAgent*> agents;
-	AgentManager();
-	static AgentManager* instance;
-	static bool instanceFlag;
 	int lastCallFrame;
 
 public:
-	// TODO: Implement a proper constructor/destructor
-
-	static int StartFrame;	// TODO: Remove? Never used, has no purpose.
-
+	AgentManager();
 	~AgentManager();
 
-	/** Returns the instance to the AgentManager. */
-	static AgentManager* getInstance();
 
 	/** Adds an agent to the container. Is called each time a new
 	 * unit is built. */

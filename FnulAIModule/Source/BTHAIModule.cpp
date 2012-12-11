@@ -1,16 +1,6 @@
 #include <BTHAIModule.h>
-#include <Managers\BuildPlanner.h>
-#include <Managers\ExplorationManager.h>
-#include <Managers\CoverMap.h>
-#include <Commander\Commander.h>
-#include <Utils\Pathfinder.h>
-#include <Managers\UpgradesPlanner.h>
-#include <Managers\ResourceManager.h>
-#include <Utils\Profiler.h>
-#include <Utils\Config.h>
+
 #include <Shlwapi.h>
-
-
 
 using namespace BWAPI;
 
@@ -31,7 +21,7 @@ BTHAIModule::~BTHAIModule()
 
 void BTHAIModule::onStart() 
 {
-	Profiler::getInstance()->start("OnInit");
+	Profiler::Instance().start("OnInit");
 
 	//Needed for BWAPI to work
 	Broodwar->enableFlag(Flag::UserInput);
@@ -52,13 +42,6 @@ void BTHAIModule::onStart()
 
 	profile = false;
 
-	//Init our singleton agents
-	// TODO: Change these singletons
-	CoverMap::getInstance();
-	BuildPlanner::getInstance();
-	UpgradesPlanner::getInstance();
-	ResourceManager::getInstance();
-	Pathfinder::getInstance();
 
 	// TODO: Need a better memory management model
 	loop = new AIloop();
@@ -80,20 +63,20 @@ void BTHAIModule::onStart()
     //Add the units we have from start to agent manager
 	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++) 
 	{
-		AgentManager::getInstance()->addAgent(*i);
+		AgentManager::Instance().addAgent(*i);
 	}
 
 	running = true;
 
-	Profiler::getInstance()->end("OnInit");
+	Profiler::Instance().end("OnInit");
 }
 
 void BTHAIModule::gameStopped()
 {
 	//statistics->WriteStatisticsFile(isWinner);
-	//Pathfinder::getInstance()->stop();
+	//Pathfinder::Instance().stop();
 	//delete(statistics);
-	//Profiler::getInstance()->dumpToFile();
+	//Profiler::Instance().dumpToFile();
 	running = false;
 }
 
@@ -104,7 +87,7 @@ void BTHAIModule::onEnd(bool isWinner)
 
 void BTHAIModule::onFrame() 
 {
-	Profiler::getInstance()->start("OnFrame");
+	Profiler::Instance().start("OnFrame");
 
 	if (!running) 
 	{
@@ -130,19 +113,19 @@ void BTHAIModule::onFrame()
 	loop->show_debug();
 
 	// Display the name of this bot on screen
-	Config::getInstance()->displayBotName();
+	Config::Instance().displayBotName();
 
-	Profiler::getInstance()->end("OnFrame");
+	Profiler::Instance().end("OnFrame");
 
 	// Display profiling information
-	if (profile) Profiler::getInstance()->showAll();
+	if (profile) Profiler::Instance().showAll();
 }
 
 void BTHAIModule::onSendText(std::string text) 
 {
 	if (text=="/a") 
 	{
-		Commander::getInstance()->forceAttack();
+		Commander::Instance().forceAttack();
 	}
 	else if(text=="/p") 
 	{
@@ -171,7 +154,7 @@ void BTHAIModule::onSendText(std::string text)
 	else if (text.substr(0, 2)=="sq") 
 	{
 		int id = atoi(&text[2]);
-		Squad* squad = Commander::getInstance()->getSquad(id);
+		Squad* squad = Commander::Instance().getSquad(id);
 		if (squad != NULL) 
 		{
 			squad->printFullInfo();
@@ -212,7 +195,7 @@ void BTHAIModule::onSendText(std::string text)
 		if ((int)units.size() > 0) 
 		{
 			int unitID = (*units.begin())->getID();
-			BaseAgent* agent = AgentManager::getInstance()->getAgent(unitID);
+			BaseAgent* agent = AgentManager::Instance().getAgent(unitID);
 			if (agent != NULL) 
 			{
 				agent->printInfo();
@@ -223,7 +206,7 @@ void BTHAIModule::onSendText(std::string text)
 				if (mUnit->getType().isNeutral())
 				{
 					//Neutral unit. Check distance to base.
-					BaseAgent* agent = AgentManager::getInstance()->getAgent(UnitTypes::Terran_Command_Center);
+					BaseAgent* agent = AgentManager::Instance().getAgent(UnitTypes::Terran_Command_Center);
 					double dist = agent->getUnit()->getDistance(mUnit);
 					Broodwar->printf("Distance to base: %d", (int)dist);
 				}
@@ -286,7 +269,7 @@ void BTHAIModule::onUnitShow(BWAPI::Unit* unit)
 	{
 		if (!unit->getPlayer()->isNeutral() && !unit->getPlayer()->isAlly(Broodwar->self()))
 		{
-			ExplorationManager::getInstance()->addSpottedUnit(unit);
+			ExplorationManager::Instance().addSpottedUnit(unit);
 		}
 	}
 }

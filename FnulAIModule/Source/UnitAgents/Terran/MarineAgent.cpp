@@ -21,12 +21,12 @@ bool MarineAgent::isNeededInBunker()
 	/*
 	if (!unit->isLoaded())
 	{
-		Squad* sq = Commander::getInstance()->getSquad(squadID);
+		Squad* sq = Commander::Instance().getSquad(squadID);
 		if (sq != NULL)
 		{
 			if (sq->isBunkerDefend())
 			{
-				vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+				vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 				for (int i = 0; i < (int)agents.size(); i++)
 				{
 					if (agents.at(i)->isAlive() && agents.at(i)->isOfType(UnitTypes::Terran_Bunker))
@@ -50,5 +50,5 @@ void MarineAgent::computeActions()
 	if (isNeededInBunker()) return;
 
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

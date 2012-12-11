@@ -2,6 +2,7 @@
 #define __RESOURCEMANAGER_H__
 
 #include <BWAPI.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -27,26 +28,20 @@ struct ResourceLock {
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class ResourceManager {
+class ResourceManager : public r2::Singleton<ResourceManager> {
 
 private:
-	static ResourceManager* instance;
+	vector<ResourceLock> locks;
 
-	ResourceManager();
 
 	bool hasProductionBuilding();
 	
-	vector<ResourceLock> locks;
-
 	int calcLockedMinerals();
 	int calcLockedGas();
-
 public:
-	/** Destructor. */
+	ResourceManager();
 	~ResourceManager();
 
-	/** Returns the instance to the BuildPlanner that is currently used. */
-	static ResourceManager* getInstance();
 
 	/** Checks if we need to construct a new worker. */
 	bool needWorker();

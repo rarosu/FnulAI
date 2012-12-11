@@ -16,5 +16,5 @@ ObserverAgent::ObserverAgent(Unit* mUnit)
 void ObserverAgent::computeActions()
 {
 	bool defensive = true;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

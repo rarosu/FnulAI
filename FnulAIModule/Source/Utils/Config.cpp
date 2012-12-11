@@ -4,8 +4,6 @@
 #include <fstream>
 #include <sstream>
 
-Config* Config::instance = NULL;
-
 Config::Config()
 {
 	version = "";
@@ -36,14 +34,6 @@ Config::~Config()
 
 }
 
-Config* Config::getInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new Config();
-	}
-	return instance;
-}
 
 void Config::readConfigFile()
 {

@@ -2,6 +2,7 @@
 #define __AGENTFACTORY_H__
 
 #include <MainAgents\BaseAgent.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -15,28 +16,24 @@ using namespace std;
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class AgentFactory {
+class AgentFactory : public r2::Singleton<AgentFactory> {
 
 private:
-	AgentFactory();
-	static AgentFactory* instance;
-	static bool instanceFlag;
+	
 	BaseAgent* createTerranAgent(Unit* unit);
 	BaseAgent* createProtossAgent(Unit* unit);
 	BaseAgent* createZergAgent(Unit* unit);
 	
 public:
+	AgentFactory();
 	~AgentFactory();
 
-	/** Returns the instance to the class. */
-	static AgentFactory* getInstance();
 
 	/** Creates the BaseAgent */
 	BaseAgent* createAgent(Unit* unit);
 
 	/** Returns true if the unit is of the specified type. */
 	bool isOfType(Unit* unit, UnitType type);
-	
 };
 
 #endif

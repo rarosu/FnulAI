@@ -9,8 +9,6 @@
 #include <Managers\BuildOrderFileReader.h>
 #include <Managers\ResourceManager.h>
 
-BuildPlanner* BuildPlanner::instance = NULL;
-
 BuildPlanner::BuildPlanner()
 {
 	BuildOrderFileReader br = BuildOrderFileReader();
@@ -23,14 +21,6 @@ BuildPlanner::~BuildPlanner()
 	
 }
 
-BuildPlanner* BuildPlanner::getInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new BuildPlanner();
-	}
-	return instance;
-}
 
 void BuildPlanner::buildingDestroyed(Unit* building)
 {
@@ -59,7 +49,7 @@ void BuildPlanner::computeActions()
 	}
 	lastCallFrame = cFrame;
 
-	if (AgentManager::getInstance()->getNoWorkers() == 0)
+	if (AgentManager::Instance().getNoWorkers() == 0)
 	{
 		//No workers so cant do anything
 		return;
@@ -72,13 +62,13 @@ void BuildPlanner::computeActions()
 		if (elapsed >= 2000)
 		{
 			//Reset the build request
-			WorkerAgent* worker = (WorkerAgent*)AgentManager::getInstance()->getAgent(buildQueue.at(i).assignedWorkerId);
+			WorkerAgent* worker = (WorkerAgent*)AgentManager::Instance().getAgent(buildQueue.at(i).assignedWorkerId);
 			if (worker != NULL)
 			{
 				worker->reset();
 			}
 			buildOrder.insert(buildOrder.begin(), buildQueue.at(i).toBuild);
-			ResourceManager::getInstance()->unlockResources(buildQueue.at(i).toBuild);
+			ResourceManager::Instance().unlockResources(buildQueue.at(i).toBuild);
 			buildQueue.erase(buildQueue.begin() + i);
 			return;
 		}
@@ -109,7 +99,7 @@ bool BuildPlanner::hasResourcesLeft()
 {
 	int totalMineralsLeft = 0;
 
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -165,7 +155,7 @@ bool BuildPlanner::shallBuildSupply()
 		{
 			if (buildOrder.at(0).getID() != UnitTypes::Protoss_Pylon.getID())
 			{
-				vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+				vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 				for (int i = 0; i < (int)agents.size(); i++)
 				{
 					BaseAgent* agent = agents.at(i);
@@ -232,7 +222,7 @@ bool BuildPlanner::supplyBeingBuilt()
 	UnitType supply = Broodwar->self()->getRace().getSupplyProvider();
 
 	//1. Check if we are already building a supply
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -306,14 +296,14 @@ void BuildPlanner::handleWorkerDestroyed(UnitType type, int workerID)
 		{
 			buildQueue.erase(buildQueue.begin() + i);
 			buildOrder.insert(buildOrder.begin(), type);
-			ResourceManager::getInstance()->unlockResources(type);
+			ResourceManager::Instance().unlockResources(type);
 		}
 	}
 }
 
 bool BuildPlanner::executeMorph(UnitType target, UnitType evolved)
 {
-	BaseAgent* agent = AgentManager::getInstance()->getClosestAgent(Broodwar->self()->getStartLocation(), target);
+	BaseAgent* agent = AgentManager::Instance().getClosestAgent(Broodwar->self()->getStartLocation(), target);
 	if (agent != NULL)
 	{
 		StructureAgent* sAgent = (StructureAgent*)agent;
@@ -347,7 +337,7 @@ bool BuildPlanner::executeOrder(UnitType type)
 		{
 			return false;
 		}
-		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 			if (agents.at(i)->getUnitType().isResourceDepot() && agents.at(i)->getUnit()->isBeingConstructed())
@@ -359,7 +349,7 @@ bool BuildPlanner::executeOrder(UnitType type)
 
 	if (type.isResourceDepot())
 	{
-		TilePosition pos = CoverMap::getInstance()->findExpansionSite();
+		TilePosition pos = CoverMap::Instance().findExpansionSite();
 		if (pos.x() == -1)
 		{
 			//No expansion site found.
@@ -369,7 +359,7 @@ bool BuildPlanner::executeOrder(UnitType type)
 	}
 	if (type.isRefinery())
 	{
-		TilePosition rSpot = CoverMap::getInstance()->searchRefinerySpot();
+		TilePosition rSpot = CoverMap::Instance().searchRefinerySpot();
 		if (rSpot.x() < 0)
 		{
 			//No buildspot found
@@ -395,12 +385,12 @@ bool BuildPlanner::executeOrder(UnitType type)
 	}
 
 	//Check if we have resources
-	if (!ResourceManager::getInstance()->hasResources(type))
+	if (!ResourceManager::Instance().hasResources(type))
 	{
 		return false;
 	}
 
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -566,7 +556,7 @@ bool BuildPlanner::containsType(UnitType type)
 
 bool BuildPlanner::coveredByDetector(TilePosition pos)
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -604,7 +594,7 @@ void BuildPlanner::expand(UnitType commandCenterUnit)
 		return;
 	}
 
-	TilePosition pos = CoverMap::getInstance()->findExpansionSite();
+	TilePosition pos = CoverMap::Instance().findExpansionSite();
 	if (pos.x() == -1)
 	{
 		//No expansion site found.
@@ -618,7 +608,7 @@ int BuildPlanner::noInProduction(UnitType type)
 {
 	int no = 0;
 	
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);

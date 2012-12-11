@@ -21,7 +21,7 @@ void AIloop::setDebugMode(int mode)
 void AIloop::computeActions()
 {
 	//First, do some checks to see if it is time to resign
-	if (AgentManager::getInstance()->noMiningWorkers() == 0 && Broodwar->self()->minerals() <= 50)
+	if (AgentManager::Instance().noMiningWorkers() == 0 && Broodwar->self()->minerals() <= 50)
 	{
 		// Be polite!
 		Broodwar->sendText("gg");
@@ -31,7 +31,7 @@ void AIloop::computeActions()
 		return;
 	}
 
-	if (AgentManager::getInstance()->countNoBases() == 0 && Broodwar->getFrameCount() > 500)
+	if (AgentManager::Instance().countNoBases() == 0 && Broodwar->getFrameCount() > 500)
 	{
 		// Politeness is important
 		Broodwar->sendText("gg");
@@ -42,29 +42,29 @@ void AIloop::computeActions()
 	}
 
 	// TODO: If the singletons are changed, this needs to be changed too.
-	AgentManager::getInstance()->computeActions();
-	BuildPlanner::getInstance()->computeActions();
-	Commander::getInstance()->computeActions();
-	ExplorationManager::getInstance()->computeActions();
+	AgentManager::Instance().computeActions();
+	BuildPlanner::Instance().computeActions();
+	Commander::Instance().computeActions();
+	ExplorationManager::Instance().computeActions();
 }
 
 void AIloop::addUnit(Unit* unit)
 {
-	AgentManager::getInstance()->addAgent(unit);
+	AgentManager::Instance().addAgent(unit);
 
 	// TODO: wut? Buildings are not in the build order?
 	//Remove from buildorder if this is a building
 	if (unit->getType().isBuilding())
 	{
-		BuildPlanner::getInstance()->unlock(unit->getType());
+		BuildPlanner::Instance().unlock(unit->getType());
 	}
 }
 
 void AIloop::morphUnit(Unit* unit)
 {
 	// TODO: Look this up. Morph drone? Always? What about mutalisks?
-	AgentManager::getInstance()->morphDrone(unit);
-	BuildPlanner::getInstance()->unlock(unit->getType());
+	AgentManager::Instance().morphDrone(unit);
+	BuildPlanner::Instance().unlock(unit->getType());
 }
 
 void AIloop::unitDestroyed(Unit* unit)
@@ -72,10 +72,10 @@ void AIloop::unitDestroyed(Unit* unit)
 	// One of our units were destroyed...
 	if (unit->getPlayer()->getID() == Broodwar->self()->getID())
 	{
-		AgentManager::getInstance()->removeAgent(unit);
+		AgentManager::Instance().removeAgent(unit);
 		if (unit->getType().isBuilding())
 		{
-			BuildPlanner::getInstance()->buildingDestroyed(unit);
+			BuildPlanner::Instance().buildingDestroyed(unit);
 		}
 
 		// NOTE: Agents are not immediately removed, only removed at AgentManager::cleanup
@@ -85,26 +85,26 @@ void AIloop::unitDestroyed(Unit* unit)
 		//Assist workers under attack
 		if (unit->getType().isWorker())
 		{
-			Commander::getInstance()->assistWorker(AgentManager::getInstance()->getAgent(unit->getID()));
+			Commander::Instance().assistWorker(AgentManager::Instance().getAgent(unit->getID()));
 		}
 
 		// WARNING: Potential danger
 		//Update dead score
 		if (unit->getType().canMove())
 		{
-			Commander::getInstance()->ownDeadScore += unit->getType().destroyScore();
+			Commander::Instance().ownDeadScore += unit->getType().destroyScore();
 		}
 
 		// TODO: Look this one up.
-		AgentManager::getInstance()->cleanup();
+		AgentManager::Instance().cleanup();
 	}
 
 	// TODO: Will allies count into the neutral category? Otherwise, we count allied death as a good thing...
 	// One of our enemies' or allies' units were destroyed
 	if (unit->getPlayer()->getID() != Broodwar->self()->getID() && !unit->getPlayer()->isNeutral())
 	{
-		ExplorationManager::getInstance()->unitDestroyed(unit);
-		Commander::getInstance()->enemyDeadScore += unit->getType().destroyScore();
+		ExplorationManager::Instance().unitDestroyed(unit);
+		Commander::Instance().enemyDeadScore += unit->getType().destroyScore();
 	}
 }
 
@@ -113,7 +113,7 @@ void AIloop::show_debug()
 	if (debug_mode > 0)
 	{
 		// Show the goals of our units
-		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 			if (agents.at(i)->isBuilding()) agents.at(i)->debug_showGoal();
@@ -121,14 +121,14 @@ void AIloop::show_debug()
 		}
 
 		// Type manager information
-		BuildPlanner::getInstance()->printInfo();
-		ExplorationManager::getInstance()->printInfo();
-		Commander::getInstance()->printInfo();
+		BuildPlanner::Instance().printInfo();
+		ExplorationManager::Instance().printInfo();
+		Commander::Instance().printInfo();
 		
-		if (debug_mode >= 3) CoverMap::getInstance()->debug();
-		if (debug_mode >= 2) ResourceManager::getInstance()->printInfo();
+		if (debug_mode >= 3) CoverMap::Instance().debug();
+		if (debug_mode >= 2) ResourceManager::Instance().printInfo();
 
-		Commander::getInstance()->debug_showGoal();
+		Commander::Instance().debug_showGoal();
 
 		// Draw information from the terrain analysis
 		if (debug_mode >= 1)

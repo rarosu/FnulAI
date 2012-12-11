@@ -30,7 +30,7 @@ void RefineryAgent::computeActions()
 	{
 		if (!unit->isBeingConstructed())
 		{
-			WorkerAgent* worker = (WorkerAgent*)AgentManager::getInstance()->findClosestFreeWorker(unit->getTilePosition());
+			WorkerAgent* worker = (WorkerAgent*)AgentManager::Instance().findClosestFreeWorker(unit->getTilePosition());
 			if (worker != NULL)
 			{
 				worker->getUnit()->rightClick(unit);

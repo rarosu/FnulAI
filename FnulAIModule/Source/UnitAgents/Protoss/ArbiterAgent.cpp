@@ -16,5 +16,5 @@ ArbiterAgent::ArbiterAgent(Unit* mUnit)
 void ArbiterAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

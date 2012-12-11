@@ -3,6 +3,7 @@
 
 #include <BWAPI.h>
 #include <MainAgents\BaseAgent.h>
+#include <r2-singleton.hpp>
 
 using namespace BWAPI;
 using namespace std;
@@ -15,13 +16,9 @@ using namespace std;
  *
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
-class UpgradesPlanner {
+class UpgradesPlanner : public r2::Singleton<UpgradesPlanner> {
 
 private:
-	static UpgradesPlanner* instance;
-
-	UpgradesPlanner();
-	
 	vector<UpgradeType> upgradesP1;
 	vector<UpgradeType> upgradesP2;
 	vector<UpgradeType> upgradesP3;
@@ -31,13 +28,10 @@ private:
 
 	bool canUpgrade(UpgradeType type, Unit* unit);
 	bool canResearch(TechType type, Unit* unit);
-
 public:
-	/** Destructor. */
+	UpgradesPlanner();
 	~UpgradesPlanner();
 
-	/** Returns the instance to the UpgradesPlanner that is currently used. */
-	static UpgradesPlanner* getInstance();
 
 	/** Checks if there is an upgrade the specified agent need to upgrade/research. */
 	bool checkUpgrade(BaseAgent* agent);

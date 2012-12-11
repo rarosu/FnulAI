@@ -17,5 +17,5 @@ HydraliskAgent::HydraliskAgent(Unit* mUnit)
 void HydraliskAgent::computeActions()
 {
 	bool defensive = false;
-	PFManager::getInstance()->computeAttackingUnitActions(this, goal, defensive);
+	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
 }

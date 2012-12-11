@@ -246,7 +246,7 @@ Unit* Squad::findTarget()
 				{
 							if ((*i)->isCloaked())
 				{
-								Commander::getInstance()->handleCloakedEnemy((*i)->getTilePosition(), this);
+								Commander::Instance().handleCloakedEnemy((*i)->getTilePosition(), this);
 							}
 
 							return (*i);
@@ -322,7 +322,7 @@ bool Squad::needUnit(UnitType type)
 		if (setup.at(i).equals(type))
 		{
 			//Found a matching setup, see if there is room
-			if (setup.at(i).current + BuildPlanner::getInstance()->noInProduction(type) + noCreated <= setup.at(i).no)
+			if (setup.at(i).current + BuildPlanner::Instance().noInProduction(type) + noCreated <= setup.at(i).no)
 			{
 				return true;
 			}
@@ -484,7 +484,7 @@ void Squad::removeMember(BaseAgent* agent)
 		TilePosition goal = agent->getGoal();
 		if (goal.x() >= 0)
 		{
-			ExplorationManager::getInstance()->setExplored(goal);
+			ExplorationManager::Instance().setExplored(goal);
 		}
 	}
 }
@@ -627,12 +627,12 @@ void Squad::setGoal(TilePosition mGoal)
 			{
 				if ((int)agents.size() > 0)
 				{
-					Pathfinder::getInstance()->requestPath(getCenter(), mGoal);
-					if (!Pathfinder::getInstance()->isReady(getCenter(), mGoal))
+					Pathfinder::Instance().requestPath(getCenter(), mGoal);
+					if (!Pathfinder::Instance().isReady(getCenter(), mGoal))
 					{
 						return;
 					}
-					path = Pathfinder::getInstance()->getPath(getCenter(), mGoal);
+					path = Pathfinder::Instance().getPath(getCenter(), mGoal);
 					arrivedFrame = -1;
 					pathIndex = 10;
 

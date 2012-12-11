@@ -7,9 +7,6 @@
 #include <MainAgents\WorkerAgent.h>
 #include <Utils\Profiler.h>
 
-int AgentManager::StartFrame = 0;
-bool AgentManager::instanceFlag = false;
-AgentManager* AgentManager::instance = NULL;
 
 AgentManager::AgentManager()
 {
@@ -18,24 +15,12 @@ AgentManager::AgentManager()
 
 AgentManager::~AgentManager()
 {
-	instanceFlag = false;
-	/*
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		delete agents.at(i);
 	}
-	*/
 }
 
-AgentManager* AgentManager::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new AgentManager();
-		instanceFlag = true;
-	}
-	return instance;
-}
 
 vector<BaseAgent*> AgentManager::getAgents()
 {
@@ -165,18 +150,18 @@ void AgentManager::addAgent(Unit* unit)
 
 	if (!found)
 	{
-		BaseAgent* newAgent = AgentFactory::getInstance()->createAgent(unit);
+		BaseAgent* newAgent = AgentFactory::Instance().createAgent(unit);
 		agents.push_back(newAgent);
 
 		if (newAgent->isBuilding())
 		{
-			CoverMap::getInstance()->addConstructedBuilding(unit);
-			BuildPlanner::getInstance()->unlock(unit->getType());
-			ResourceManager::getInstance()->unlockResources(unit->getType());
+			CoverMap::Instance().addConstructedBuilding(unit);
+			BuildPlanner::Instance().unlock(unit->getType());
+			ResourceManager::Instance().unlockResources(unit->getType());
 		}
 		else
 		{
-			Commander::getInstance()->unitCreated(newAgent);
+			Commander::Instance().unitCreated(newAgent);
 		}
 	}
 }
@@ -190,12 +175,12 @@ void AgentManager::removeAgent(Unit* unit)
 			
 			if (agents.at(i)->isBuilding())
 			{
-				CoverMap::getInstance()->buildingDestroyed(unit);
+				CoverMap::Instance().buildingDestroyed(unit);
 			}
 
 			agents.at(i)->destroyed();
 
-			Commander::getInstance()->unitDestroyed(agents.at(i));
+			Commander::Instance().unitDestroyed(agents.at(i));
 
 			return;
 		}
@@ -326,7 +311,7 @@ BaseAgent* AgentManager::findClosestFreeWorker(TilePosition pos)
 	BaseAgent* bestAgent = NULL;
 	double bestDist = 10000;
 
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		if (agents.at(i)->isFreeWorker())

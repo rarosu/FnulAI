@@ -72,7 +72,7 @@ void ExplorationSquad::computeActions()
 			priority = activePriority;
 		}
 
-		TilePosition nGoal = ExplorationManager::getInstance()->getNextToExplore(this);
+		TilePosition nGoal = ExplorationManager::Instance().getNextToExplore(this);
 		if (nGoal.x() >= 0)
 		{
 			this->goal = nGoal;

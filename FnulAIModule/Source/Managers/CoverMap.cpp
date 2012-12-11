@@ -6,9 +6,6 @@
 #include <Commander\Commander.h>
 #include <Utils\Profiler.h>
 
-bool CoverMap::instanceFlag = false;
-CoverMap* CoverMap::instance = NULL;
-
 CoverMap::CoverMap()
 {
 	w = Broodwar->mapWidth();
@@ -36,7 +33,7 @@ CoverMap::CoverMap()
 	}
 
 	//Fill from current agents
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -100,31 +97,18 @@ CoverMap::CoverMap()
 
 CoverMap::~CoverMap()
 {
-	/*
 	for(int i = 0 ; i < w ; i++)
 	{
 		delete[] cover_map[i];
 	}
+
 	delete[] cover_map;
-	*/
-
-	instanceFlag = false;
-}
-
-CoverMap* CoverMap::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new CoverMap();
-		instanceFlag = true;
-	}
-	return instance;
 }
 
 
 Unit* CoverMap::findWorker()
 {
-	BaseAgent* worker = AgentManager::getInstance()->getAgent(Broodwar->self()->getRace().getWorker());
+	BaseAgent* worker = AgentManager::Instance().getAgent(Broodwar->self()->getRace().getWorker());
 	if (worker != NULL)
 	{
 		return worker->getUnit();
@@ -191,7 +175,7 @@ bool CoverMap::canBuild(UnitType toBuild, TilePosition buildSpot)
 	}
 
 	//Step 4: Check any units on tile
-	if (AgentManager::getInstance()->unitsInArea(buildSpot, toBuild.tileWidth(), toBuild.tileHeight(), worker->getID()))
+	if (AgentManager::Instance().unitsInArea(buildSpot, toBuild.tileWidth(), toBuild.tileHeight(), worker->getID()))
 	{
 		return false;
 	}
@@ -253,7 +237,7 @@ TilePosition CoverMap::findBuildSpot(UnitType toBuild)
 	//If we find unpowered buildings, build a Pylon there
 	if (BaseAgent::isOfType(toBuild, UnitTypes::Protoss_Pylon))
 	{
-		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 			BaseAgent* agent = agents.at(i);
@@ -272,14 +256,14 @@ TilePosition CoverMap::findBuildSpot(UnitType toBuild)
 
 	if (BaseAgent::isOfType(toBuild, UnitTypes::Protoss_Pylon))
 	{
-		if (AgentManager::getInstance()->countNoUnits(UnitTypes::Protoss_Pylon) > 0)
+		if (AgentManager::Instance().countNoUnits(UnitTypes::Protoss_Pylon) > 0)
 		{
-			TilePosition cp = Commander::getInstance()->findChokePoint();
+			TilePosition cp = Commander::Instance().findChokePoint();
 			if (cp.x() != -1)
 			{
 				if (!Broodwar->hasPower(cp, UnitTypes::Protoss_Cybernetics_Core))
 				{
-					if (AgentManager::getInstance()->noInProduction(UnitTypes::Protoss_Pylon) == 0)
+					if (AgentManager::Instance().noInProduction(UnitTypes::Protoss_Pylon) == 0)
 					{
 						TilePosition spot = findBuildSpot(toBuild, cp);
 						return spot;
@@ -292,7 +276,7 @@ TilePosition CoverMap::findBuildSpot(UnitType toBuild)
 	//Build near chokepoints: Bunker, Photon Cannon, Creep Colony
 	if (BaseAgent::isOfType(toBuild, UnitTypes::Terran_Bunker) || BaseAgent::isOfType(toBuild, UnitTypes::Protoss_Photon_Cannon) || BaseAgent::isOfType(toBuild, UnitTypes::Zerg_Creep_Colony))
 	{
-		TilePosition cp = Commander::getInstance()->findChokePoint();
+		TilePosition cp = Commander::Instance().findChokePoint();
 		if (cp.x() != -1)
 		{
 			TilePosition spot = findBuildSpot(toBuild, cp);
@@ -303,7 +287,7 @@ TilePosition CoverMap::findBuildSpot(UnitType toBuild)
 	//Base buildings.
 	if (toBuild.isResourceDepot())
 	{
-		TilePosition start = ExplorationManager::getInstance()->searchExpansionSite();
+		TilePosition start = ExplorationManager::Instance().searchExpansionSite();
 		if (start.x() != -1)
 		{
 			TilePosition spot = findBuildSpot(toBuild, start);
@@ -317,7 +301,7 @@ TilePosition CoverMap::findBuildSpot(UnitType toBuild)
 	}
 
 	//General building. Search for spot around bases
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = (int)agents.size() - 1; i >= 0; i--)
 	{
 		BaseAgent* agent = agents.at(i);
@@ -613,7 +597,7 @@ TilePosition CoverMap::findRefineryBuildSpot(UnitType toBuild, TilePosition star
 	TilePosition buildSpot = findClosestGasWithoutRefinery(toBuild, start);
 	if (buildSpot.x() >= 0)
 	{
-		BaseAgent* base = AgentManager::getInstance()->getClosestBase(buildSpot);
+		BaseAgent* base = AgentManager::Instance().getClosestBase(buildSpot);
 		if (base == NULL)
 		{
 			Broodwar->printf("No base found");
@@ -649,7 +633,7 @@ TilePosition CoverMap::findClosestGasWithoutRefinery(UnitType toBuild, TilePosit
 				TilePosition cPos = TilePosition(i,j);
 
 				bool ok = true;
-				vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+				vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 				for (int i = 0; i < (int)agents.size(); i++)
 				{
 					Unit* unit = agents.at(i)->getUnit();
@@ -666,7 +650,7 @@ TilePosition CoverMap::findClosestGasWithoutRefinery(UnitType toBuild, TilePosit
 				{
 					if (ExplorationManager::canReach(home, cPos))
 					{
-						BaseAgent* agent = AgentManager::getInstance()->getClosestBase(cPos);
+						BaseAgent* agent = AgentManager::Instance().getClosestBase(cPos);
 						double dist = agent->getUnit()->getTilePosition().getDistance(cPos);
 						if (bestDist == -1 || dist < bestDist)
 						{
@@ -693,7 +677,7 @@ TilePosition CoverMap::searchRefinerySpot()
 				TilePosition cPos = TilePosition(i,j);
 
 				bool found = false;
-				vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+				vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 				for (int i = 0; i < (int)agents.size(); i++)
 				{
 					if (agents.at(i)->getUnitType().isRefinery())
@@ -710,7 +694,7 @@ TilePosition CoverMap::searchRefinerySpot()
 
 				if (!found)
 				{
-					BaseAgent* agent = AgentManager::getInstance()->getClosestBase(cPos);
+					BaseAgent* agent = AgentManager::Instance().getClosestBase(cPos);
 					if (agent != NULL)
 					{
 						TilePosition bPos = agent->getUnit()->getTilePosition();
@@ -745,7 +729,7 @@ TilePosition CoverMap::findExpansionSite()
 		bool taken = false;
 		
 		//Check if own buildings are close
-		vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 		int noBases = 0;
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
@@ -769,7 +753,7 @@ TilePosition CoverMap::findExpansionSite()
 		}
 
 		//Check if enemy buildings are close
-		int eCnt = ExplorationManager::getInstance()->spottedBuildingsWithinRange(pos, 20);
+		int eCnt = ExplorationManager::Instance().spottedBuildingsWithinRange(pos, 20);
 		if (eCnt > 0)
 		{
 			taken = true;
@@ -805,7 +789,7 @@ Unit* CoverMap::findClosestMineral(TilePosition workerPos)
 		if (cDist < bestDist)
 		{
 			//Find closest base
-			BaseAgent* base = AgentManager::getInstance()->getClosestBase(pos);
+			BaseAgent* base = AgentManager::Instance().getClosestBase(pos);
 			double dist = pos.getDistance(base->getUnit()->getTilePosition());
 			if (dist <= 12)
 			{
@@ -843,7 +827,7 @@ Unit* CoverMap::hasMineralNear(TilePosition pos)
 
 bool CoverMap::suitableForDetector(TilePosition pos)
 {
-	vector<BaseAgent*> agents = AgentManager::getInstance()->getAgents();
+	vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
 	for (int i = 0; i < (int)agents.size(); i++)
 	{
 		BaseAgent* agent = agents.at(i);

@@ -2,8 +2,6 @@
 #include <iostream>
 #include <fstream>
 
-bool Profiler::instanceFlag = false;
-Profiler* Profiler::instance = NULL;
 
 Profiler::Profiler()
 {
@@ -12,23 +10,12 @@ Profiler::Profiler()
 
 Profiler::~Profiler()
 {
-	/*
 	for (int i = 0; i < (int)obj.size(); i++)
 	{	
 		delete obj.at(i);
 	}
-	*/
 }
 
-Profiler* Profiler::getInstance()
-{
-	if (!instanceFlag)
-	{
-		instance = new Profiler();
-		instanceFlag = true;
-	}
-	return instance;
-}
 
 ProfilerObj* Profiler::getObj(string mId)
 {
