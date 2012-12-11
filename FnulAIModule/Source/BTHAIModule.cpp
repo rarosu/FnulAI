@@ -8,46 +8,63 @@ bool analyzed;
 bool analysis_just_finished;
 bool leader = false;
 
+
+DWORD WINAPI AnalyzeThread()
+{
+	// TODO: Why doesn't this work for every level, if we do not already have analyzed data for it?
+	BWTA::analyze();
+	
+	// TODO: Is there any difference between these? Are they even USED?
+	//		 Note: They are extern global variables. Could be used anywhere...
+	analyzed = true;
+	analysis_just_finished = true;
+
+	return 0;
+}
+
+
 BTHAIModule::BTHAIModule()
-	: m_logger("bwapi-data\\AI\\FnulAILog.txt")
+	: m_speed(8)
+	, m_profile(false)
+	, m_logger("bwapi-data\\AI\\FnulAILog.txt")
 {
 	m_logger.printfln("Loading the FnulAI module");
+
+
+	// Needed for BWAPI to work
+	Broodwar->enableFlag(Flag::UserInput);
+
+	//Uncomment to enable complete map information
+	//Broodwar->enableFlag(Flag::CompleteMapInformation);
+
+	// Set the game speed
+	Broodwar->setLocalSpeed(m_speed);
+
+
+	// Set the initial debug mode
+	m_loop.setDebugMode(1);
 }
 
 BTHAIModule::~BTHAIModule()
 {
+	Pathfinder::Instance().stop();
+	Profiler::Instance().dumpToFile();
+
 	m_logger.printfln("Releasing the FnulAI module");
 }
 
 void BTHAIModule::onStart() 
 {
-	
-
 	Profiler::Instance().start("OnInit");
-
-	//Needed for BWAPI to work
-	Broodwar->enableFlag(Flag::UserInput);
-
-	//Set max speed
-	speed = 8; //10
-	Broodwar->setLocalSpeed(speed);
-
-	//Uncomment to enable complete map information
-	//Broodwar->enableFlag(Flag::CompleteMapInformation);
 	
+
 	//Analyze map using BWTA (use separate thread)
 	BWTA::readMap();
-	analyzed=false;
-	analysis_just_finished=false;
+	analyzed = false;
+	analysis_just_finished = false;
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AnalyzeThread, NULL, 0, NULL); //Threaded version
 	//AnalyzeThread();
 
-	profile = false;
-
-
-	// TODO: Need a better memory management model
-	loop = new AIloop();
-	loop->setDebugMode(1);
 
 	// If replay, list all players and their races
 	if (Broodwar->isReplay()) 
@@ -62,45 +79,30 @@ void BTHAIModule::onStart()
 		}
 	}
 	
+
     //Add the units we have from start to agent manager
 	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++) 
 	{
 		AgentManager::Instance().addAgent(*i);
 	}
 
-	running = true;
 
 	Profiler::Instance().end("OnInit");
 }
 
-void BTHAIModule::gameStopped()
-{
-	//statistics->WriteStatisticsFile(isWinner);
-	//Pathfinder::Instance().stop();
-	//delete(statistics);
-	//Profiler::Instance().dumpToFile();
-	running = false;
-}
-
 void BTHAIModule::onEnd(bool isWinner) 
 {
-	gameStopped();
+	PrintStatistics(isWinner);
 }
 
 void BTHAIModule::onFrame() 
 {
 	Profiler::Instance().start("OnFrame");
 
-	if (!running) 
-	{
-		//Game over. Do nothing.
-		return;
-	}
 
 	if (!Broodwar->isInGame()) 
 	{
 		//Not in game. Do nothing.
-		gameStopped();
 		return;
 	}
 
@@ -111,16 +113,18 @@ void BTHAIModule::onFrame()
 	}
 	
 	// Update the AI per frame logic
-	loop->computeActions();
-	loop->show_debug();
+	m_loop.computeActions();
+	m_loop.show_debug();
 
 	// Display the name of this bot on screen
 	Config::Instance().displayBotName();
 
+
 	Profiler::Instance().end("OnFrame");
 
 	// Display profiling information
-	if (profile) Profiler::Instance().showAll();
+	if (m_profile) 
+		Profiler::Instance().showAll();
 }
 
 void BTHAIModule::onSendText(std::string text) 
@@ -131,27 +135,27 @@ void BTHAIModule::onSendText(std::string text)
 	}
 	else if(text=="/p") 
 	{
-		profile = !profile;
+		m_profile = !m_profile;
 	}
 	else if(text=="/d1") 
 	{
-		loop->setDebugMode(1);
+		m_loop.setDebugMode(1);
 	}
 	else if(text=="/d2") 
 	{
-		loop->setDebugMode(2);
+		m_loop.setDebugMode(2);
 	}
 	else if(text=="/d3") 
 	{
-		loop->setDebugMode(3);
+		m_loop.setDebugMode(3);
 	}
 	else if(text=="/off") 
 	{
-		loop->setDebugMode(0);
+		m_loop.setDebugMode(0);
 	}
 	else if(text=="/d0") 
 	{
-		loop->setDebugMode(0);
+		m_loop.setDebugMode(0);
 	}
 	else if (text.substr(0, 2)=="sq") 
 	{
@@ -164,32 +168,36 @@ void BTHAIModule::onSendText(std::string text)
 	}
 	else if (text=="+") 
 	{
-		speed -= 4;
-		if (speed < 0) 
+		m_speed -= 4;
+		if (m_speed < 0) 
 		{
-			speed = 0;
+			m_speed = 0;
 		}
-		Broodwar->printf("Speed increased to %d", speed);
-		Broodwar->setLocalSpeed(speed);
+
+		Broodwar->printf("Speed increased to %d", m_speed);
+		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="++") 
 	{
-		speed = 0;
-		Broodwar->printf("Speed increased to %d", speed);
-		Broodwar->setLocalSpeed(speed);
+		m_speed = 0;
+
+		Broodwar->printf("Speed increased to %d", m_speed);
+		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="-") 
 	{
 		// TODO: Impose limit?
-		speed += 4;
-		Broodwar->printf("Speed decreased to %d", speed);
-		Broodwar->setLocalSpeed(speed);
+		m_speed += 4;
+
+		Broodwar->printf("Speed decreased to %d", m_speed);
+		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="--") 
 	{
-		speed = 24;
-		Broodwar->printf("Speed decreased to %d", speed);
-		Broodwar->setLocalSpeed(speed);
+		m_speed = 24;
+
+		Broodwar->printf("Speed decreased to %d", m_speed);
+		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="i") 
 	{
@@ -229,11 +237,6 @@ void BTHAIModule::onReceiveText(BWAPI::Player* player, std::string text)
 
 void BTHAIModule::onPlayerLeft(BWAPI::Player* player) 
 {
-	if (player->getID() == Broodwar->self()->getID())
-	{
-		gameStopped();
-	}
-
 	Broodwar->sendText("%s left the game.",player->getName().c_str());
 }
 
@@ -264,7 +267,8 @@ void BTHAIModule::onUnitEvade(BWAPI::Unit* unit)
 
 void BTHAIModule::onUnitShow(BWAPI::Unit* unit) 
 {
-	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) return;
+	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) 
+		return;
 
 	// We located a new unit. If it is an enemy, add it to our spotted units.
 	if (unit->getPlayer()->getID() != Broodwar->self()->getID()) 
@@ -283,30 +287,33 @@ void BTHAIModule::onUnitHide(BWAPI::Unit* unit)
 
 void BTHAIModule::onUnitCreate(BWAPI::Unit* unit)
 {
-	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) return;
+	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) 
+		return;
 
-	loop->addUnit(unit);
+	m_loop.addUnit(unit);
 }
 
 void BTHAIModule::onUnitDestroy(BWAPI::Unit* unit) 
 {
-	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) return;
+	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) 
+		return;
 
-	loop->unitDestroyed(unit);
+	m_loop.unitDestroyed(unit);
 }
 
 void BTHAIModule::onUnitMorph(BWAPI::Unit* unit) 
 {
-	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) return;
+	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) 
+		return;
 
 	// TODO: Look into this. Why not call morphUnit for archons?
 	if (BuildPlanner::isZerg())
 	{
-		loop->morphUnit(unit);
+		m_loop.morphUnit(unit);
 	}
 	else
 	{
-		loop->addUnit(unit);
+		m_loop.addUnit(unit);
 	}
 }
 
@@ -320,18 +327,49 @@ void BTHAIModule::onSaveGame(std::string gameName)
 	Broodwar->printf("The game was saved to \"%s\".", gameName.c_str());
 }
 
-DWORD WINAPI AnalyzeThread()
+void BTHAIModule::PrintStatistics(bool isWinner)
 {
-	// TODO: Why doesn't this work for every level, if we do not already have analyzed data for it?
-	BWTA::analyze();
-	
-	// TODO: Is there any difference between these? Are they even USED?
-	//		 Note: They are extern global variables. Could be used anywhere...
-	analyzed = true;
-	analysis_just_finished = true;
+	std::ofstream file("bwapi-data\\AI\\FnulAIStatistics.txt", std::ios::out | std::ios::trunc);
 
-	return 0;
+	if (file.is_open())
+	{
+		file << "Game Won: " << isWinner << std::endl;
+		file << std::endl;
+		file << "Self Race: " << Broodwar->self()->getRace().getID() << std::endl;
+		file << "Self Minerals Mined: " << Broodwar->self()->cumulativeMinerals() << std::endl;
+		file << "Self Gas Mined: " << Broodwar->self()->cumulativeGas() << std::endl;
+		file << std::endl;
+		file << "Enemy Race: " << Broodwar->enemy()->getRace().getID() << std::endl;
+		file << "Enemy Minerals Mined: " << Broodwar->enemy()->cumulativeMinerals() << std::endl;
+		file << "Enemy Gas Mined: " << Broodwar->enemy()->cumulativeGas() << std::endl;
+		file << std::endl;
+		
+		int nTotalUserKilled = 0;
+		int nTotalEnemyKilled = 0;
+		int nTotalUserScore = 0;
+		int nTotalEnemyScore = 0;
+		for (std::set<UnitType>::const_iterator unitType = UnitTypes::allUnitTypes().begin(); unitType != UnitTypes::allUnitTypes().end(); unitType++)
+		{
+			nTotalUserKilled += Broodwar->self()->killedUnitCount(*unitType);
+			nTotalEnemyKilled += Broodwar->enemy()->killedUnitCount(*unitType);
+			nTotalUserScore += nTotalUserKilled * (*unitType).destroyScore();
+			nTotalEnemyScore += nTotalEnemyKilled * (*unitType).destroyScore();
+		}
+
+		int nTotalScore = nTotalUserScore - nTotalEnemyScore;
+
+		file << "Self Kill Count: " << nTotalUserKilled << std::endl;
+		file << "Self Kill Score: " << nTotalUserScore << std::endl;
+		file << std::endl;
+		file << "Enemy Kill Count: " << nTotalEnemyKilled << std::endl;
+		file << "Enemy Kill Score: " << nTotalEnemyScore << std::endl;
+		file << std::endl;
+		file << "Total Score: " << nTotalScore << std::endl;
+	}
+
+	file.close();
 }
+
 
 
 
@@ -387,3 +425,6 @@ void BTHAITournamentModule::onFirstAdvertisement()
 	Broodwar->sendText("Welcome to " TOURNAMENT_NAME "!");
 	Broodwar->sendText("Brought to you by " SPONSORS ".");
 }
+
+
+

@@ -13,8 +13,7 @@
 #include <Utils\Profiler.h>
 #include <Utils\Config.h>
 #include <Utils\Logger.h>
-
-#include <Statistics\Statistics.h>
+#include <Utils\ScopedPointer.h>
 #include <AIloop.h>
 
 #include <BWTA.h>
@@ -36,10 +35,6 @@ class BTHAITournamentModule : public BWAPI::TournamentModule
 };
 
 
-// TODO: Move to the source file?
-DWORD WINAPI AnalyzeThread();
-
-
 /** This class contains the main game loop and all events that is broadcasted from the Starcraft engine
  * using BWAPI. See the BWAPI documentation for more info. 
  *
@@ -49,13 +44,8 @@ DWORD WINAPI AnalyzeThread();
 class BTHAIModule : public BWAPI::AIModule
 {
 private:
-	int speed;
-	bool running;
-	bool profile;
-
-	Statistics* statistics;
-	AIloop* loop;
-
+	int m_speed;
+	bool m_profile;
 
 	Logger m_logger;
 	Config m_config;
@@ -72,7 +62,10 @@ private:
 	PFManager m_pfManager;
 	Pathfinder m_pathfinder;
 
-	void gameStopped();
+	AIloop m_loop;
+
+
+	void PrintStatistics(bool isWinner);
 public:
 	BTHAIModule();
 	~BTHAIModule();

@@ -410,10 +410,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Statistics\Statistics.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\StructureAgents\StructureAgent.cpp"
 				>
 			</File>
@@ -713,10 +709,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\Commander\SquadFileReader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Statistics\Statistics.h"
 				>
 			</File>
 			<File
