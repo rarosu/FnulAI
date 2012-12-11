@@ -190,6 +190,16 @@ void Squad::computeActions()
 	}
 
 	checkAttack();
+
+	// TODO: Remove this
+	for (int i = 0; i < agents.size(); ++i)
+	{
+		if (agents[i]->isUnit())
+		{
+			UnitAgent* a = dynamic_cast<UnitAgent*>(agents[i]);
+			a->issueCommand(BWAPI::UnitCommandTypes::Cloak);
+		}
+	}
 }
 
 bool Squad::isAttacking()

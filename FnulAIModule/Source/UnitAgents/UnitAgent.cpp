@@ -15,11 +15,21 @@ UnitAgent::UnitAgent(Unit* mUnit)
 	type = unit->getType();
 	unitID = unit->getID();
 	//Broodwar->printf("UnitAgent created (%s)", unit->getType().getName().c_str());
-	dropped = 0;
 	agentType = "UnitAgent";
 
 	goal = TilePosition(-1, -1);
 }
+
+bool UnitAgent::canIssueCommand(const BWAPI::UnitCommandType& command, BWAPI::Unit* target, int x, int y) const
+{
+	return unit->canIssueCommand(BWAPI::UnitCommand(unit, command, target, x, y, 0));
+}
+
+void UnitAgent::issueCommand(const BWAPI::UnitCommandType& command, BWAPI::Unit* target, int x, int y)
+{
+	unit->issueCommand(BWAPI::UnitCommand(unit, command, target, x, y, 0));
+}
+
 
 void UnitAgent::debug_showGoal()
 {

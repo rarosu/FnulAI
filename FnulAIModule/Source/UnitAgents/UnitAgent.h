@@ -23,7 +23,10 @@ public:
 	UnitAgent(Unit* mUnit);
 	UnitAgent();
 
-	int dropped;
+	/** Check if a unit can execute a certain command */
+	bool canIssueCommand(const BWAPI::UnitCommandType& command, BWAPI::Unit* target = NULL, int x = -1, int y = -1) const;
+	void issueCommand(const BWAPI::UnitCommandType& command, BWAPI::Unit* target = NULL, int x = -1, int y = -1);
+
 
 	/** Called each update to issue orders. */
 	void computeActions();

@@ -24,7 +24,7 @@ DWORD WINAPI AnalyzeThread()
 
 
 BTHAIModule::BTHAIModule()
-	: m_speed(8)
+	: m_speed(0)
 	, m_profile(false)
 	, m_logger("bwapi-data\\AI\\FnulAILog.txt")
 {
