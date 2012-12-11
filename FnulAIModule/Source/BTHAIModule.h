@@ -65,6 +65,8 @@ private:
 	AIloop m_loop;
 
 
+	void PrintSelectedUnitInfo();
+	void SetSpeed(int speed);
 	void PrintStatistics(bool isWinner);
 public:
 	BTHAIModule();

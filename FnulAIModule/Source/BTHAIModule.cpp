@@ -38,8 +38,7 @@ BTHAIModule::BTHAIModule()
 	//Broodwar->enableFlag(Flag::CompleteMapInformation);
 
 	// Set the game speed
-	Broodwar->setLocalSpeed(m_speed);
-
+	SetSpeed(m_speed);
 
 	// Set the initial debug mode
 	m_loop.setDebugMode(1);
@@ -57,12 +56,11 @@ void BTHAIModule::onStart()
 {
 	Profiler::Instance().start("OnInit");
 	
-
-	//Analyze map using BWTA (use separate thread)
+	// Analyze map using BWTA (use separate thread)
 	BWTA::readMap();
 	analyzed = false;
 	analysis_just_finished = false;
-	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AnalyzeThread, NULL, 0, NULL); //Threaded version
+	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AnalyzeThread, NULL, 0, NULL);
 	//AnalyzeThread();
 
 
@@ -79,13 +77,11 @@ void BTHAIModule::onStart()
 		}
 	}
 	
-
-    //Add the units we have from start to agent manager
+    // Add the units we have from start to agent manager
 	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++) 
 	{
 		AgentManager::Instance().addAgent(*i);
 	}
-
 
 	Profiler::Instance().end("OnInit");
 }
@@ -168,60 +164,31 @@ void BTHAIModule::onSendText(std::string text)
 	}
 	else if (text=="+") 
 	{
-		m_speed -= 4;
-		if (m_speed < 0) 
-		{
-			m_speed = 0;
-		}
+		SetSpeed(m_speed - 4);
 
 		Broodwar->printf("Speed increased to %d", m_speed);
-		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="++") 
 	{
-		m_speed = 0;
+		SetSpeed(0);
 
 		Broodwar->printf("Speed increased to %d", m_speed);
-		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="-") 
 	{
-		// TODO: Impose limit?
-		m_speed += 4;
+		SetSpeed(m_speed + 4);
 
 		Broodwar->printf("Speed decreased to %d", m_speed);
-		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="--") 
 	{
-		m_speed = 24;
+		SetSpeed(24);
 
 		Broodwar->printf("Speed decreased to %d", m_speed);
-		Broodwar->setLocalSpeed(m_speed);
 	}
 	else if (text=="i") 
 	{
-		set<Unit*> units = Broodwar->getSelectedUnits();
-		if ((int)units.size() > 0) 
-		{
-			int unitID = (*units.begin())->getID();
-			BaseAgent* agent = AgentManager::Instance().getAgent(unitID);
-			if (agent != NULL) 
-			{
-				agent->printInfo();
-			}
-			else 
-			{
-				Unit* mUnit = (*units.begin());
-				if (mUnit->getType().isNeutral())
-				{
-					//Neutral unit. Check distance to base.
-					BaseAgent* agent = AgentManager::Instance().getAgent(UnitTypes::Terran_Command_Center);
-					double dist = agent->getUnit()->getDistance(mUnit);
-					Broodwar->printf("Distance to base: %d", (int)dist);
-				}
-			}
-		}
+		PrintSelectedUnitInfo();
 	}
 	else 
 	{
@@ -327,6 +294,44 @@ void BTHAIModule::onSaveGame(std::string gameName)
 	Broodwar->printf("The game was saved to \"%s\".", gameName.c_str());
 }
 
+
+
+void BTHAIModule::PrintSelectedUnitInfo()
+{
+	set<Unit*> units = Broodwar->getSelectedUnits();
+	if ((int)units.size() > 0) 
+	{
+		int unitID = (*units.begin())->getID();
+		BaseAgent* agent = AgentManager::Instance().getAgent(unitID);
+		if (agent != NULL) 
+		{
+			agent->printInfo();
+		}
+		else 
+		{
+			Unit* mUnit = (*units.begin());
+			if (mUnit->getType().isNeutral())
+			{
+				//Neutral unit. Check distance to base.
+				BaseAgent* agent = AgentManager::Instance().getAgent(UnitTypes::Terran_Command_Center);
+				double dist = agent->getUnit()->getDistance(mUnit);
+				Broodwar->printf("Distance to base: %d", (int)dist);
+			}
+		}
+	}
+}
+
+void BTHAIModule::SetSpeed(int speed)
+{
+	if (speed < 0)
+		speed = 0;
+	if (speed > 24)
+		speed = 24;
+	
+	m_speed = speed;
+	Broodwar->setLocalSpeed(m_speed);
+}
+
 void BTHAIModule::PrintStatistics(bool isWinner)
 {
 	std::ofstream file("bwapi-data\\AI\\FnulAIStatistics.txt", std::ios::out | std::ios::trunc);
@@ -360,9 +365,11 @@ void BTHAIModule::PrintStatistics(bool isWinner)
 
 		file << "Self Kill Count: " << nTotalUserKilled << std::endl;
 		file << "Self Kill Score: " << nTotalUserScore << std::endl;
+		file << "Self Dead Score: " << Commander::Instance().ownDeadScore << std::endl;
 		file << std::endl;
 		file << "Enemy Kill Count: " << nTotalEnemyKilled << std::endl;
 		file << "Enemy Kill Score: " << nTotalEnemyScore << std::endl;
+		file << "Enemy Dead Score: " << Commander::Instance().enemyDeadScore << std::endl;
 		file << std::endl;
 		file << "Total Score: " << nTotalScore << std::endl;
 	}
