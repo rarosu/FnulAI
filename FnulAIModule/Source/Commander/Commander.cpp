@@ -941,10 +941,10 @@ void Commander::addBunkerSquad()
 				if (sq->hasUnits(UnitTypes::Terran_Marine, 1))
 				{
 					if (added < 4)
-				{
+					{
 						BaseAgent* ma = sq->removeMember(UnitTypes::Terran_Marine);
 						if (ma != NULL)
-				{
+						{
 							added++;
 							bSquad->addMember(ma);
 							ma->clearGoal();

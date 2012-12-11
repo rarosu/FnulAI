@@ -42,12 +42,18 @@ BTHAIModule::BTHAIModule()
 
 	// Set the initial debug mode
 	m_loop.setDebugMode(1);
+
+	// Be polite!
+	Broodwar->sendText("glhf");
 }
 
 BTHAIModule::~BTHAIModule()
 {
 	Pathfinder::Instance().stop();
 	Profiler::Instance().dumpToFile();
+
+	// Be polite!
+	Broodwar->sendText("gg");
 
 	m_logger.printfln("Releasing the FnulAI module");
 }

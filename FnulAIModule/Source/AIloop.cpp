@@ -23,9 +23,6 @@ void AIloop::computeActions()
 	//First, do some checks to see if it is time to resign
 	if (AgentManager::Instance().noMiningWorkers() == 0 && Broodwar->self()->minerals() <= 50)
 	{
-		// Be polite!
-		Broodwar->sendText("gg");
-
 		Broodwar->printf("No workers left. Bailing out.");
 		Broodwar->leaveGame();
 		return;
