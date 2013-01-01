@@ -8,9 +8,9 @@
 	Things to know:
 	* Must own a dynamically created pointer
 	* Cannot own arrays
-	* Ownership cannot be transferred
 	* If the inner pointer is replaced, the old pointer is first deleted
 	* Can own NULL
+	* Ownership can be transferred but not shared
 */
 
 #ifndef SCOPED_POINTER_H
