@@ -131,6 +131,7 @@ void BTHAIModule::onFrame()
 
 void BTHAIModule::onSendText(std::string text) 
 {
+	
 	if (text=="/a") 
 	{
 		Commander::Instance().forceAttack();

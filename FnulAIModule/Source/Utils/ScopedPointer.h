@@ -26,12 +26,18 @@ public:
 	/** Constructor - initialize to resource */
 	ScopedPointer(T* resource);
 
+	/** Constructor - transfer ownership from pointer to this */
+	ScopedPointer(ScopedPointer<T>& pointer);
+
 	/** Destructor */
 	~ScopedPointer();
 
 
 	/** Assignment operator */
 	ScopedPointer& operator=(T* resource);
+
+	/** Assignment operator */
+	ScopedPointer& operator=(ScopedPointer<T>& pointer);
 
 
 	/** Access operators - to access the inner resource */
@@ -72,6 +78,13 @@ ScopedPointer<T>::ScopedPointer(T* resource)
 	: m_resource(resource) {}
 
 template <typename T>
+ScopedPointer<T>::ScopedPointer(ScopedPointer<T>& pointer)
+{
+	m_resource = pointer.m_resource;
+	pointer.m_resource = NULL;
+}
+
+template <typename T>
 ScopedPointer<T>::~ScopedPointer()
 {
 	delete m_resource;
@@ -81,8 +94,26 @@ ScopedPointer<T>::~ScopedPointer()
 template <typename T>
 ScopedPointer<T>& ScopedPointer<T>::operator=(T* resource)
 {
-	delete m_resource;
-	m_resource = resource;
+	if (resource != m_resource)
+	{
+		delete m_resource;
+		m_resource = resource;
+	}
+
+	return *this;
+}
+
+template <typename T>
+ScopedPointer& ScopedPointer<T>::operator=(ScopedPointer<T>& pointer)
+{
+	if (pointer != *this)
+	{
+		// Since it is a different pointer, it cannot own the same memory. Delete the
+		// old memory and assume ownership of pointer's memory.
+		delete m_resource;
+		m_resource = pointer.m_resource;
+		pointer.m_resource = NULL;
+	}
 
 	return *this;
 }
