@@ -13,7 +13,6 @@
 #include <Utils\Profiler.h>
 #include <Utils\Config.h>
 #include <Utils\Logger.h>
-#include <Utils\ScopedPointer.h>
 #include <AIloop.h>
 
 #include <BWTA.h>

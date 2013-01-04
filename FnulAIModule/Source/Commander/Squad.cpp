@@ -192,7 +192,7 @@ void Squad::computeActions()
 	checkAttack();
 
 	// TODO: Remove this
-	for (int i = 0; i < agents.size(); ++i)
+	for (size_t i = 0; i < agents.size(); ++i)
 	{
 		if (agents[i]->isUnit())
 		{

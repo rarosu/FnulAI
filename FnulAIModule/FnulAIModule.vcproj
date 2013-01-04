@@ -684,10 +684,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Utils\ScopedPointer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\UnitAgents\Zerg\ScourgeAgent.h"
 				>
 			</File>
