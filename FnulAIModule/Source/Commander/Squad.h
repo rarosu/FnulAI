@@ -21,6 +21,7 @@ public:
 	void attack(const BWAPI::TilePosition& position);
 	void defend(const BWAPI::TilePosition& position);
 
+
 	UnitSetup& getSetup();
 	UnitCollection& getUnits();
 	int getID() const;

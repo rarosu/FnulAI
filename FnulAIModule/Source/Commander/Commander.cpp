@@ -71,14 +71,14 @@ void Commander::computeActions()
 	{
 		for (int i = 0; i < (int)squads.size(); i++)
 		{
-			if (squads.at(i)->isOffensive())
+			if (squads[i]->isOffensive())
 			{
-				if (!squads.at(i)->hasGoal())
+				if (!squads[i]->hasGoal())
 				{
-					TilePosition closeEnemy = getClosestEnemyBuilding(TilePosition(squads.at(i)->getCenter()));
+					TilePosition closeEnemy = getClosestEnemyBuilding(TilePosition(squads[i]->getCenter()));
 					if (closeEnemy.x() >= 0)
 					{
-						squads.at(i)->attack(closeEnemy);
+						squads[i]->attack(closeEnemy);
 					}
 				}
 			}
@@ -103,7 +103,7 @@ void Commander::computeActions()
 	//Compute Squad actions.
 	for(int i = 0; i < (int)squads.size(); i++)
 	{
-		squads.at(i)->computeActions();
+		squads[i]->computeActions();
 	}
 
 	//Attack if we have filled all supply spots
