@@ -24,6 +24,8 @@ public:
 
 	/** Called each update to issue orders. */
 	void computeActions();
+
+	bool shouldBeCloaked();
 };
 
 #endif
