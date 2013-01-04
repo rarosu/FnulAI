@@ -95,3 +95,33 @@ namespace Predicate
 	}
 }
 
+
+std::vector<BWAPI::Unit*> getUnitsMatchingPredicate(const std::vector<BWAPI::Unit*>& units, Predicate::Predicate* predicate)
+{
+	std::vector<BWAPI::Unit*> result;
+
+	for (size_t i = 0; i < units.size(); ++i)
+	{
+		if (predicate->Evaluate(units[i]))
+		{
+			result.push_back(units[i]);
+		}
+	}
+
+	return result;
+}
+
+std::vector<BaseAgent*> getAgentsMatchingPredicate(const std::vector<BaseAgent*>& agents, Predicate::Predicate* predicate)
+{
+	std::vector<BaseAgent*> result;
+
+	for (size_t i = 0; i < agents.size(); ++i)
+	{
+		if (predicate->Evaluate(agents[i]->getUnit()))
+		{
+			result.push_back(agents[i]);
+		}
+	}
+
+	return result;
+}

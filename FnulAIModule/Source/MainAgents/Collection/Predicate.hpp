@@ -2,6 +2,8 @@
 #define PREDICATE_HPP
 
 #include <BWAPI.h>
+#include <vector>
+#include <MainAgents\BaseAgent.h>
 
 namespace Predicate
 {
@@ -61,6 +63,7 @@ namespace Predicate
 	};
 }
 
-
+std::vector<BWAPI::Unit*> getUnitsMatchingPredicate(const std::vector<BWAPI::Unit*>& units, Predicate::Predicate* predicate);
+std::vector<BaseAgent*> getAgentsMatchingPredicate(const std::vector<BaseAgent*>& agents, Predicate::Predicate* predicate);
 
 #endif
