@@ -221,6 +221,7 @@ void BTHAIModule::onNukeDetect(BWAPI::Position target)
 	{
 		TilePosition t = TilePosition(target);
 		Broodwar->printf("Nuclear Launch Detected at (%d,%d)",t.x(),t.y());
+		Commander::Instance().avoidNuke(target);
 	}
 	else
 	{
