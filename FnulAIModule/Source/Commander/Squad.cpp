@@ -1,16 +1,18 @@
-#include <Commander\Squad.hh>
+#include <Commander\Squad.h>
 
 Squad::Squad(int id, 
 		Tactic* defaultTactic, 
 		const std::string& name, 
 		unsigned int priority, 
-		unsigned int activePriority)
+		unsigned int activePriority,
+		bool required)
 {
 	m_id = id;
 	m_priority = priority;
 	m_activePriority = activePriority;
 	m_active = false;
 	m_name = name;
+	m_required = required;
 
 	m_tacticStack.push_back(defaultTactic);
 
@@ -54,12 +56,11 @@ const std::string& Squad::getName() const
 	return m_name;
 }
 
-
-
-void Squad::addMember(BaseAgent* agent)
+bool Squad::isRequired() const
 {
-	m_units.m_units.push_back(agent->getUnit());
+	return m_required;
 }
+
 
 void Squad::pushTactic(Tactic* tactic)
 {
@@ -81,12 +82,9 @@ bool Squad::isActive() const
 	return m_setup.isSatisfied(m_units);
 }
 
-bool Squad::isRequired() const
-{
-	return m_required;
-}
 
-bool Squad::needUnit(const BWAPI::UnitType& type) const
+
+bool Squad::needUnit(BWAPI::Unit* unit) const
 {
 	return m_setup.getRequirement(type) - m_units.getUnitsMatchingPredicate(&Predicate::IsOfType(type)).m_units.size();
 }

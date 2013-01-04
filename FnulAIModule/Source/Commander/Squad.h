@@ -14,12 +14,12 @@ public:
 		Tactic* defaultTactic, 
 		const std::string& name, 
 		unsigned int priority, 
-		unsigned int activePriority);
+		unsigned int activePriority,
+		bool required);
 
 	void computeActions();
-	void assist();
-	void 
-
+	void attack(const BWAPI::TilePosition& position);
+	void defend(const BWAPI::TilePosition& position);
 
 	UnitSetup& getSetup();
 	UnitCollection& getUnits();
@@ -28,9 +28,8 @@ public:
 	int getActivePriority() const;
 	const std::string& getName() const;
 
-
-	/** Add a member to the squad */
-	void addMember(BaseAgent* agent);
+	/** See if all units in this squad is required */
+	bool isRequired() const;
 
 
 	/** Push a tactic to be used, until popped */
@@ -43,14 +42,8 @@ public:
 	void setDefaultTactic(Tactic* tactic);
 
 
-	/** See if we have all units required */
-	bool isActive() const;
-
-	/** See if all units in this squad is required */
-	bool isRequired() const;
-
-	/** See if we need a unit of the given type */
-	bool needUnit(const BWAPI::UnitType& type) const;
+	/** Return whether we require a certain unit or not */
+	bool needUnit(BWAPI::Unit* unit) const;
 private:
 	unsigned int m_id;
 	unsigned int m_priority;

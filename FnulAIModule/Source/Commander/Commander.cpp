@@ -61,7 +61,7 @@ void Commander::computeActions()
 			{
 				if (defSpot.x() != -1)
 				{
-					squads.at(i)->defend(defSpot);
+					squads[i]->defend(defSpot);
 				}
 			}
 		}
@@ -218,7 +218,7 @@ void Commander::assignUnit(BaseAgent* agent)
 		Squad* sq = squads.at(i);
 		if (sq->needUnit(agent->getUnitType()))
 		{
-			sq->addMember(agent->getUnit());
+			sq->getUnits().m_units.push_back(agent->getUnit());
 			//Broodwar->printf("%s is assigned to SQ %d", agent->getUnitType().getName().c_str(), sq->getID());
 			return;
 		}
@@ -360,8 +360,9 @@ void Commander::unitCreated(BaseAgent* agent)
 
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
-		if (squads.at(i)->addMember(agent))
+		if (squads[i]->needUnit(agent->getUnit())
 		{
+			squads[i]->getUnits().m_units.push_back(agent->getUnit());
 			break;
 		}
 	}
@@ -930,7 +931,12 @@ void Commander::printInfo()
 
 void Commander::addBunkerSquad()
 {
-	Squad* bSquad = new Squad(100 + AgentManager::Instance().countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 5);
+	Squad* bSquad = new Squad(100 + AgentManager::Instance().countNoUnits(UnitTypes::Terran_Bunker), 
+							  Tactic::createTacticFromName(Tactic::BUNKER),
+							  "BunkerSquad",
+							  5,
+							  5,
+							  false);
 	bSquad->getSetup().addRequirement(UnitTypes::Terran_Marine, 4);
 	squads.push_back(bSquad);
 
@@ -951,7 +957,7 @@ void Commander::addBunkerSquad()
 						if (ma != NULL)
 						{
 							added++;
-							bSquad->addMember(ma);
+							bSquad->getUnits().m_units.push_back(ma->getUnit());
 							ma->clearGoal();
 						}
 					}

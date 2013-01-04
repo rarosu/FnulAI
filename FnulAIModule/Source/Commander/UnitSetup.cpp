@@ -32,3 +32,16 @@ bool UnitSetup::isSatisfied(const UnitCollection& units) const
 
 	return true;
 }
+
+UnitSetup UnitSetup::getRemainingRequiredUnits(const UnitCollection& units) const
+{
+	UnitSetup result;
+	for (RequirementMap::iterator it = m_requirements.begin(); it != m_requirements.end(); it++)
+	{
+		UnitCollection unitsOfType = units.getUnitsMatchingPredicate(&Predicate::IsOfType(it->first));
+		
+		result.addRequirement(it->first, unitsOfType.m_units.size() - it->second);
+	}
+
+	return true;
+}

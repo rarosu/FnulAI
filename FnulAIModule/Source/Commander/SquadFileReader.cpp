@@ -1,3 +1,4 @@
+#include <Commander\Tactic.hpp>
 #include <Commander\SquadFileReader.h>
 #include <Utils\FileReaderUtils.h>
 #include <Managers\ExplorationManager.h>
@@ -93,58 +94,14 @@ vector<Squad*> SquadFileReader::readSquadList()
 
 void SquadFileReader::createSquad()
 {
-	// TODO: Change to tactics
-	if (type == "Offensive")
-	{
-		cSquad = new Squad(id, Squad::OFFENSIVE, name, priority);
-	}
-	else if (type == "Bunker")
-	{
-		cSquad = new Squad(id, Squad::BUNKER, name, priority);
-	}
-	else if (type == "Offense")
-	{
-		cSquad = new Squad(id, Squad::OFFENSIVE, name, priority);
-	}
-	else if (type == "Defensive")
-	{
-		cSquad = new Squad(id, Squad::DEFENSIVE, name, priority);
-	}
-	else if (type == "Defense")
-	{
-		cSquad = new Squad(id, Squad::DEFENSIVE, name, priority);
-	}
-	else if (type == "Support")
-	{
-		cSquad = new Squad(id, Squad::SUPPORT, name, priority);
-	}
-	else if (type == "Support")
-	{
-		cSquad = new Squad(id, Squad::SUPPORT, name, priority);
-	}
-	else if (type == "Exploration")
-	{
-		cSquad = new ExplorationSquad(id, name, priority);
-	}
-	else if (type == "Special")
-	{
-		cSquad = new MySpecialSquad(id, name, priority);
-	}
-	else
-	{
-		Broodwar->printf("Fatal: No Squad type found for entry %s", type.c_str());
-		return;
-	}
-
-	cSquad->setMorphsTo(morphsTo);
-
+	bool required = false;
 	if (offType == "Required")
 	{
-		cSquad->setRequired(true);
+		required = true;
 	}
-	cSquad->setActivePriority(activePriority);
-	
-	//Broodwar->printf("Added squad: [%d] %s", id, type.c_str());
+
+	Tactic* defaultTactic = Tactic::createTacticFromName(type);
+	cSquad = new Squad(id, defaultTactic, name, priority, activePriority, required);
 
 	squads.push_back(cSquad);
 	id++;
@@ -161,7 +118,7 @@ void SquadFileReader::addUnit(string line)
 	if (type.getID() != UnitTypes::Unknown.getID())
 	{
 		int no = toInt(token.value);
-		cSquad->addSetup(type, toInt(token.value));
+		cSquad->getSetup().addRequirement(type, toInt(token.value));
 		return;
 	}
 

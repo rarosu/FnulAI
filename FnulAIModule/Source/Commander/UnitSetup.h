@@ -13,6 +13,9 @@ public:
 
 	/** Check whether the given units satisfy this setup */
 	bool isSatisfied(const UnitCollection& units) const;
+
+	/** Get the units remaining to satisfy this setup */
+	UnitSetup getRemainingRequiredUnits(const UnitCollection& units) const;
 private:
 	typedef std::map<BWAPI::UnitType, int> RequirementMap;
 	RequirementMap m_requirements;
