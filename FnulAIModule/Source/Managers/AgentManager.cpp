@@ -27,6 +27,11 @@ vector<BaseAgent*> AgentManager::getAgents()
 	return agents;
 }
 
+const UnitCollection& AgentManager::getOurUnits() const
+{
+	return m_ourUnits;
+}
+
 int AgentManager::size()
 {
 	return agents.size();
@@ -457,4 +462,11 @@ TilePosition AgentManager::getClosestDetector(TilePosition startPos)
 	}
 
 	return pos;
+}
+
+void AgentManager::printDebugInfo()
+{
+	BWAPI::Broodwar->drawTextScreen(10, 200, "Air agents: %d\nGround agents: %d", 
+		m_ourUnits.getUnitsMatchingPredicate(&Predicate::IsAir()).m_units.size(), 
+		m_ourUnits.getUnitsMatchingPredicate(&Predicate::IsGround()).m_units.size());
 }

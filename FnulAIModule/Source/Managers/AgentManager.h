@@ -74,6 +74,9 @@ public:
 	/** Returns a list of all agents in the container. */
 	vector<BaseAgent*> getAgents();
 
+	/** Return a list of our units (the units we have agents for) */
+	const UnitCollection& getOurUnits() const;
+
 	/** Returns the number of agents the exists in the vector. */
 	int size();
 
@@ -103,6 +106,9 @@ public:
 
 	/** Removes inactive agents from the container. Shouldn't be called too often. */
 	void cleanup();
+
+	/** Print some debug info regarding agents */
+	void printDebugInfo();
 };
 
 #endif

@@ -30,9 +30,6 @@ void AIloop::computeActions()
 
 	if (AgentManager::Instance().countNoBases() == 0 && Broodwar->getFrameCount() > 500)
 	{
-		// Politeness is important
-		Broodwar->sendText("gg");
-
 		Broodwar->printf("No bases left. Bailing out.");
 		Broodwar->leaveGame();
 		return;
@@ -118,6 +115,7 @@ void AIloop::show_debug()
 		}
 
 		// Type manager information
+		AgentManager::Instance().printDebugInfo();
 		BuildPlanner::Instance().printInfo();
 		ExplorationManager::Instance().printInfo();
 		Commander::Instance().printInfo();
