@@ -59,6 +59,16 @@ namespace Predicate
 	private:
 		BWAPI::TechType m_tech;
 	};
+
+	class IsOfType : public Predicate
+	{
+	public:
+		IsOfType(const BWAPI::UnitType& type);
+
+		bool Evaluate(BWAPI::Unit* unit);
+	private:
+		BWAPI::UnitType m_type;
+	};
 }
 
 

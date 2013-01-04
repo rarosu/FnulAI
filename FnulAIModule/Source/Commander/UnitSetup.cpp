@@ -1,35 +1,34 @@
 #include <Commander\UnitSetup.h>
-#include <Commander\Squad.h>
+#include <MainAgents\Collection\Predicate.hpp>
 
-UnitSetup::UnitSetup()
+void UnitSetup::addRequirement(BWAPI::UnitType type, int count)
 {
-
+	m_requirements[type] = count;
 }
 
-bool UnitSetup::equals(UnitType mType)
+void UnitSetup::removeRequirement(BWAPI::UnitType type)
 {
-	return equals(type, mType);
+	RequirementMap::iterator it = m_requirements.find(type);
+	if (it != m_requirements.end())
+		m_requirements.erase(it);
 }
 
-bool UnitSetup::equals(UnitType t1, UnitType t2)
+int UnitSetup::getRequirement(BWAPI::UnitType type)
 {
-	UnitType used1 = t1;
-	UnitType used2 = t2;
+	RequirementMap::iterator it = m_requirements.find(type);
+	if (it != m_requirements.end())
+		return it->second;
+	return -1;
+}
 
-	if (t1.getID() == UnitTypes::Terran_Siege_Tank_Siege_Mode) used1 = UnitTypes::Terran_Siege_Tank_Tank_Mode;
-	if (t2.getID() == UnitTypes::Terran_Siege_Tank_Siege_Mode) used2 = UnitTypes::Terran_Siege_Tank_Tank_Mode;
-	if (t1.getID() == UnitTypes::Zerg_Lurker) used1 = UnitTypes::Zerg_Hydralisk;
-	if (t2.getID() == UnitTypes::Zerg_Lurker) used2 = UnitTypes::Zerg_Hydralisk;
-	if (t1.getID() == UnitTypes::Zerg_Guardian) used1 = UnitTypes::Zerg_Mutalisk;
-	if (t2.getID() == UnitTypes::Zerg_Guardian) used2 = UnitTypes::Zerg_Mutalisk;
-	if (t1.getID() == UnitTypes::Zerg_Devourer) used1 = UnitTypes::Zerg_Mutalisk;
-	if (t2.getID() == UnitTypes::Zerg_Devourer) used2 = UnitTypes::Zerg_Mutalisk;
-	if (t1.getID() == UnitTypes::Protoss_High_Templar) used1 = UnitTypes::Protoss_Archon;
-	if (t2.getID() == UnitTypes::Protoss_High_Templar) used2 = UnitTypes::Protoss_Archon;
-
-	if (used1.getID() == used2.getID())
+bool UnitSetup::isSatisfied(const UnitCollection& units) const
+{
+	for (RequirementMap::iterator it = m_requirements.begin(); it != m_requirements.end(); it++)
 	{
-		return true;
+		UnitCollection unitsOfType = units.getUnitsMatchingPredicate(&Predicate::IsOfType(it->first));
+		if (unitsOfType.m_units.size() < it->second)
+			return false;
 	}
-	return false;
+
+	return true;
 }

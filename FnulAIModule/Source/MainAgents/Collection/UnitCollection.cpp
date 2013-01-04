@@ -1,4 +1,5 @@
 #include <MainAgents\Collection\UnitCollection.hpp>
+#include <Managers\AgentManager.h>
 
 UnitCollection UnitCollection::getUnitsMatchingPredicate(Predicate::Predicate* predicate) const
 {
@@ -13,6 +14,18 @@ UnitCollection UnitCollection::getUnitsMatchingPredicate(Predicate::Predicate* p
 	}
 
 	return result;
+}
+
+std::vector<BaseAgent*> UnitCollection::getAgents() const
+{
+	std::vector<BaseAgent*> agents;
+
+	for (size_t i = 0; i < m_units.size(); ++i)
+	{
+		agents.push_back(AgentManager::Instance().getAgent(m_units[i]));
+	}
+
+	return agents;
 }
 
 BWAPI::Position UnitCollection::getCenter() const

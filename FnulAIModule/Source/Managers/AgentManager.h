@@ -87,6 +87,9 @@ public:
 	/** Returns the first agent in the list of the specified type, or NULL if not found. */
 	BaseAgent* getAgent(UnitType type);
 
+	/** Return the agent associated with the specified unit */
+	BaseAgent* getAgent(BWAPI::Unit* unit);
+
 	/** Requests a free Zerg Overlord to move to the specified position. */
 	void requestOverlord(TilePosition pos);
 

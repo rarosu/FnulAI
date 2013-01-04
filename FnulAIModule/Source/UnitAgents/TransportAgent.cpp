@@ -22,7 +22,7 @@ int TransportAgent::getCurrentLoad()
 	if (sq != NULL)
 	{
 		int load = 0;
-		vector<BaseAgent*> agents = sq->getMembers();
+		vector<BaseAgent*> agents = sq->getUnits().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 			BaseAgent* a = agents.at(i);
@@ -60,7 +60,7 @@ BaseAgent* TransportAgent::findUnitToLoad(int spaceLimit)
 	Squad* sq = Commander::Instance().getSquad(squadID);
 	if (sq != NULL)
 	{
-		vector<BaseAgent*> agents = sq->getMembers();
+		vector<BaseAgent*> agents = sq->getUnits().getAgents();
 		for (int i = 0; i < (int)agents.size(); i++)
 		{
 			BaseAgent* a = agents.at(i);

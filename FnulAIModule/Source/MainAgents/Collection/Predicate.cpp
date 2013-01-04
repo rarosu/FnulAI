@@ -93,5 +93,21 @@ namespace Predicate
 		// Agent is deleted
 		return false;
 	}
+
+	IsOfType::IsOfType(const BWAPI::UnitType& type)
+		: m_type(type)
+	{}
+
+	bool IsOfType::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			if (unit->getType() == m_type)
+				return true;
+		}
+
+		// Agent is deleted
+		return false;
+	}
 }
 

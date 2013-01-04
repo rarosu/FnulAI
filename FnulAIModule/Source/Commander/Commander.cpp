@@ -218,7 +218,7 @@ void Commander::assignUnit(BaseAgent* agent)
 		Squad* sq = squads.at(i);
 		if (sq->needUnit(agent->getUnitType()))
 		{
-			sq->addMember(agent);
+			sq->addMember(agent->getUnit());
 			//Broodwar->printf("%s is assigned to SQ %d", agent->getUnitType().getName().c_str(), sq->getID());
 			return;
 		}
@@ -931,7 +931,7 @@ void Commander::printInfo()
 void Commander::addBunkerSquad()
 {
 	Squad* bSquad = new Squad(100 + AgentManager::Instance().countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 5);
-	bSquad->addSetup(UnitTypes::Terran_Marine, 4);
+	bSquad->getSetup().addRequirement(UnitTypes::Terran_Marine, 4);
 	squads.push_back(bSquad);
 
 	//Try to fill from other squads.

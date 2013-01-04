@@ -1,37 +1,21 @@
-#ifndef __UNITSETUP_H__
-#define __UNITSETUP_H__
+#ifndef UNIT_SETUP_HPP
+#define UNIT_SETUP_HPP
 
-#include <MainAgents\BaseAgent.h>
+#include <map>
+#include <MainAgents\Collection\UnitCollection.hpp>
 
-using namespace BWAPI;
-using namespace std;
-
-/** This class is used by the Squad class to handle the number of units of a specified type is
- * in the squad.
- *
- * Author: Johan Hagelback (johan.hagelback@gmail.com)
- */
-class UnitSetup {
-
-private:
-	
+class UnitSetup
+{
 public:
-	/** Default constructor. */
-	UnitSetup();
+	void addRequirement(BWAPI::UnitType type, int count);
+	void removeRequirement(BWAPI::UnitType type);
+	int getRequirement(BWAPI::UnitType type);
 
-	/** Type of unit. */
-	UnitType type;
-	/** Wanted number of the unit. */
-	int no;
-	/** Current number of the unit. */
-	int current;
-
-	/** Checks if this setup equals to the specified type. */
-	bool equals(UnitType mType);
-
-	/** Checks if unittypes matches. Needed for morphing units like Siege Tanks and Lurkers. */
-	static bool equals(UnitType t1, UnitType t2);
-
+	/** Check whether the given units satisfy this setup */
+	bool isSatisfied(const UnitCollection& units) const;
+private:
+	typedef std::map<BWAPI::UnitType, int> RequirementMap;
+	RequirementMap m_requirements;
 };
 
 #endif

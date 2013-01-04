@@ -338,6 +338,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Commander\Tactics\OffensiveTactic.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UnitAgents\Zerg\OverlordAgent.cpp"
 				>
 			</File>
@@ -415,6 +419,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\StructureAgents\StructureAgent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Commander\Tactic.cpp"
 				>
 			</File>
 			<File
@@ -552,6 +560,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Commander\Tactics\DefensiveTactic.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UnitAgents\Zerg\DefilerAgent.h"
 				>
 			</File>
@@ -644,6 +656,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Commander\Tactics\OffensiveTactic.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UnitAgents\Zerg\OverlordAgent.h"
 				>
 			</File>
@@ -716,11 +732,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Commander\Squad.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Commander\SquadFileReader.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\StructureAgents\StructureAgent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Commander\Tactic.hpp"
 				>
 			</File>
 			<File
@@ -741,6 +765,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\MainAgents\Collection\UnitCollection.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Commander\UnitSetup.h"
 				>
 			</File>
 			<File

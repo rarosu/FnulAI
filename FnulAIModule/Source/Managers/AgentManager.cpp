@@ -80,6 +80,15 @@ BaseAgent* AgentManager::getAgent(UnitType type)
 	return NULL;
 }
 
+BaseAgent* AgentManager::getAgent(BWAPI::Unit* unit)
+{
+	for (size_t i = 0; i < agents.size(); ++i)
+	{
+		if (agents[i]->getUnit() == unit)
+			return agents[i];
+	}
+}
+
 BaseAgent* AgentManager::getClosestBase(TilePosition pos)
 {
 	BaseAgent* agent = NULL;

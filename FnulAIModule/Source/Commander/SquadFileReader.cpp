@@ -93,7 +93,7 @@ vector<Squad*> SquadFileReader::readSquadList()
 
 void SquadFileReader::createSquad()
 {
-	
+	// TODO: Change to tactics
 	if (type == "Offensive")
 	{
 		cSquad = new Squad(id, Squad::OFFENSIVE, name, priority);

@@ -14,6 +14,8 @@ public:
 	/** Select a subset of units */
 	UnitCollection getUnitsMatchingPredicate(Predicate::Predicate* predicate) const;
 
+	/** Get the units that are agents only */
+	std::vector<BaseAgent*> getAgents() const;
 
 	/** Get collection metadata */
 	BWAPI::Position getCenter() const;
