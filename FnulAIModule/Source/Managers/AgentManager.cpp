@@ -152,6 +152,7 @@ void AgentManager::addAgent(Unit* unit)
 	{
 		BaseAgent* newAgent = AgentFactory::Instance().createAgent(unit);
 		agents.push_back(newAgent);
+		m_ourUnits.m_units.push_back(newAgent->getUnit());
 
 		if (newAgent->isBuilding())
 		{
@@ -172,7 +173,6 @@ void AgentManager::removeAgent(Unit* unit)
 	{
 		if (agents.at(i)->matches(unit))
 		{
-			
 			if (agents.at(i)->isBuilding())
 			{
 				CoverMap::Instance().buildingDestroyed(unit);
@@ -182,7 +182,17 @@ void AgentManager::removeAgent(Unit* unit)
 
 			Commander::Instance().unitDestroyed(agents.at(i));
 
-			return;
+			break;
+		}
+	}
+
+	// Remove it from our unit list
+	for (int i = 0; i < m_ourUnits.m_units.size(); ++i)
+	{
+		if (m_ourUnits.m_units[i] == unit)
+		{
+			m_ourUnits.m_units.erase(m_ourUnits.m_units.begin() + i);
+			break;
 		}
 	}
 }
@@ -194,10 +204,22 @@ void AgentManager::morphDrone(Unit* unit)
 		if (agents.at(i)->matches(unit))
 		{
 			agents.erase(agents.begin() + i);
+			
+			// Remove it from the unit list
+			for (size_t k = 0; k < m_ourUnits.m_units.size(); ++k)
+			{
+				if (m_ourUnits.m_units[k] == unit)
+				{
+					m_ourUnits.m_units.erase(m_ourUnits.m_units.begin() + k);
+					break;
+				}
+			}
+
 			addAgent(unit);
 			return;
 		}
 	}
+
 	//No match found. Add it anyway.
 	if (unit->exists())
 	{

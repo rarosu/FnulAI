@@ -3,6 +3,7 @@
 
 #include <BWAPI.h>
 #include <MainAgents\BaseAgent.h>
+#include <MainAgents\Collection\UnitCollection.hpp>
 #include <Utils\cthread.h>
 #include <r2-singleton.hpp>
 
@@ -19,10 +20,10 @@ using namespace std;
  * Author: Johan Hagelback (johan.hagelback@gmail.com)
  */
 
-// TODO: Reimplement singleton
 class AgentManager : public r2::Singleton<AgentManager> {
 
 private:
+	UnitCollection m_ourUnits;
 	vector<BaseAgent*> agents;
 	int lastCallFrame;
 
