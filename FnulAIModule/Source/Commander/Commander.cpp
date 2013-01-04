@@ -164,6 +164,11 @@ void Commander::updateGoals()
 	}
 }
 
+void Commander::onNukeDetect(const BWAPI::Position& position)
+{
+	// TODO: Clear everyone
+}
+
 void Commander::debug_showGoal()
 {
 	for (int i = 0; i < (int)squads.size(); i++)

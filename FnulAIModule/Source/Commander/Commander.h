@@ -91,6 +91,11 @@ public:
 
 	void updateGoals();
 
+	/**
+		If a nuke is detected, clear everyone from the area!
+	*/
+	void onNukeDetect(const BWAPI::Position& position);
+
 	/** Called each time a unit is created. The unit is then
 	 * placed in a Squad. */
 	void unitCreated(BaseAgent* agent);
