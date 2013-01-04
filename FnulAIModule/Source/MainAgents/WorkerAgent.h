@@ -88,6 +88,8 @@ public:
 	/** Returns true if this worker is in any of the build states, and is constructing
 	 * the specified building. */
 	bool isConstructing(UnitType type);
+
+	void avoidPosition(BWAPI::Position target, float radius = 11.0f);
 };
 
 #endif

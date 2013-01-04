@@ -163,6 +163,8 @@ public:
 
 	/** Adds a bunker squad when a Terran Bunker has been created. */
 	void addBunkerSquad();
+
+	void avoidNuke(BWAPI::Position target);
 };
 
 #endif

@@ -955,3 +955,16 @@ void Commander::addBunkerSquad()
 		}
 	}
 }
+
+void Commander::avoidNuke(BWAPI::Position target)
+{
+	std::vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
+	for (size_t i = 0; i < agents.size(); ++i)
+	{
+		if (agents[i]->isWorker() && agents[i]->isAlive())
+		{
+			WorkerAgent* w = dynamic_cast<WorkerAgent*>(agents[i]);
+			w->avoidPosition(target);
+		}
+	}
+}

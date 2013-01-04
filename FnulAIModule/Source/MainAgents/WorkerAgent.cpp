@@ -500,3 +500,8 @@ string WorkerAgent::getStateAsText()
 	};
 	return strReturn;
 }
+
+void WorkerAgent::avoidPosition(BWAPI::Position target, float radius)
+{
+	
+}
