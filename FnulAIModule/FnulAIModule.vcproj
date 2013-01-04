@@ -358,6 +358,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\MainAgents\Collection\Predicate.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Utils\Profiler.cpp"
 				>
 			</File>
@@ -427,6 +431,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\UnitAgents\UnitAgent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\MainAgents\Collection\UnitCollection.cpp"
 				>
 			</File>
 			<File
@@ -656,6 +664,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\MainAgents\Collection\Predicate.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Utils\Profiler.h"
 				>
 			</File>
@@ -725,6 +737,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\UnitAgents\UnitAgent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\MainAgents\Collection\UnitCollection.hpp"
 				>
 			</File>
 			<File
