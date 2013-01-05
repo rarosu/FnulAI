@@ -20,9 +20,19 @@ SiegeTankAgent::SiegeTankAgent(Unit* mUnit)
 void SiegeTankAgent::computeActions()
 {
 	if (shouldBeInSiege())
-		unit->siege();
+	{
+		if (!unit->isSieged())
+		{
+			unit->siege();
+		}
+	}
 	else
-		unit->unsiege();
+	{
+		if (unit->isSieged())
+		{
+			unit->unsiege();
+		}
+	}
 
 	bool defensive = false;
 	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
@@ -34,8 +44,16 @@ bool SiegeTankAgent::shouldBeInSiege()
 	bool threatened = isThreatened();
 	bool hasTargets = hasTargetsInRange();
 
+	/*
+	if (inDefenseSquad)
+		Broodwar->printf("Siege Tank %d is in defense squad", unit->getID());
+	else
+		Broodwar->printf("Siege Tank %d is not in defense squad", unit->getID());
 	if (threatened)
 		Broodwar->printf("Siege Tank %d is threatened!", unit->getID());
+	if (hasTargets)
+		Broodwar->printf("Siege Tank %d has targets.", unit->getID());
+	*/
 
 	// Never stay in siege if we are threatened
 	if (threatened)
@@ -56,7 +74,7 @@ bool SiegeTankAgent::shouldBeInSiege()
 bool SiegeTankAgent::isInStationaryDefensiveSquad()
 {
 	Squad* sq = Commander::Instance().getSquad(squadID);
-	if (sq->isDefensive() && !sq->hasGoal())
+	if (sq->isDefensive() && sq->isCloseTo(sq->getCenter()))
 		return true;
 	return false;
 }
@@ -108,17 +126,18 @@ bool SiegeTankAgent::isThreatened()
 
 bool SiegeTankAgent::hasTargetsInRange()
 {
+	int minRange = BWAPI::WeaponTypes::Arclite_Shock_Cannon.minRange();
+	int maxRange = BWAPI::WeaponTypes::Arclite_Shock_Cannon.maxRange();
+
 	std::vector<BWAPI::Unit*> units;
-	std::set<BWAPI::Unit*> unitSet = unit->getUnitsInRadius(385);
+	//std::set<BWAPI::Unit*> unitSet = unit->getUnitsInRadius(maxRange);
+	std::set<BWAPI::Unit*> unitSet = unit->getUnitsInWeaponRange(BWAPI::WeaponTypes::Arclite_Shock_Cannon);
 	for (std::set<BWAPI::Unit*>::iterator it = unitSet.begin(); it != unitSet.end(); it++)
 		units.push_back(*it);
 
 	std::vector<BWAPI::Unit*> targets = units;
 	targets = getUnitsMatchingPredicate(targets, &Predicate::IsHostile());
 	targets = getUnitsMatchingPredicate(targets, &Predicate::IsGround());
-
-	int minRange = BWAPI::WeaponTypes::Arclite_Shock_Cannon.minRange();
-	int maxRange = BWAPI::WeaponTypes::Arclite_Shock_Cannon.maxRange();
 
 	for (size_t i = 0; i < targets.size(); ++i)
 	{

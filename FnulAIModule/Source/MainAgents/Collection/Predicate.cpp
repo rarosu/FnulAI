@@ -73,7 +73,7 @@ namespace Predicate
 	{
 		if (unit != NULL && unit->getHitPoints() > 0)
 		{
-			return BWAPI::Broodwar->allies().find(unit->getPlayer()) == BWAPI::Broodwar->allies().end();
+			return BWAPI::Broodwar->enemies().find(unit->getPlayer()) != BWAPI::Broodwar->enemies().end();
 		}
 
 		return false;
