@@ -200,7 +200,8 @@ public:
 	AttackLocation determineAttackLocationSituation(BaseAgent* agent);
 
 	/** See if a squad is moving to a certain location */
-	bool isSquadMovingToLocation(const TilePosition& location, int radius);
+	bool isSquadMovingToLocation(const TilePosition& position, int radius);
+	bool isSquadMovingToLocation(const std::vector<Squad*>& squads, const TilePosition& location, int radius);
 
 	/** Find the index of the nearest squad to a position out of the given squads */
 	size_t findNearestSquad(const std::vector<Squad*>& squads, const TilePosition& nearPosition);
@@ -210,6 +211,12 @@ public:
 	{
 	public:
 		virtual bool Evaluate(Squad* squad) = 0;
+	};
+
+	class IsActiveSquad : public Commander::SquadPredicate
+	{
+	public:
+		bool Evaluate(Squad* squad);
 	};
 
 	class IsDefensiveSquad : public Commander::SquadPredicate
