@@ -59,6 +59,9 @@ public:
 	 */
 	Squad(int mId, int mType, string mName, int mPriority);
 
+	/** Get the current state of the squad */
+	int getCurrentState();
+
 	/** Returns the id for this Squad. */
 	int getID();
 

@@ -201,6 +201,39 @@ public:
 
 	/** See if a squad is moving to a certain location */
 	bool isSquadMovingToLocation(const TilePosition& location, int radius);
+
+	/** Find the nearest, idle defensive squad to a position. Idle means that they are
+	not protecting something at the moment. */
+	Squad* findNearestIdleDefensiveSquad(const TilePosition& nearPosition);
+
+
+	class SquadPredicate
+	{
+	public:
+		virtual bool Evaluate(Squad* squad) = 0;
+	};
+
+	class IsDefensiveSquad : public Commander::SquadPredicate
+	{
+	public:
+		bool Evaluate(Squad* squad);
+	};
+
+	class IsOffensiveSquad : public Commander::SquadPredicate
+	{
+	public:
+		bool Evaluate(Squad* squad);
+	};
+
+	class IsIdleSquad : public Commander::SquadPredicate
+	{
+	public:
+		bool Evaluate(Squad* squad);
+	};
+
+	/** Get the subset of squads that match a certain predicate */
+	std::vector<Squad*> getSquadsMatchingPredicate(const std::vector<Squad*>& squads, SquadPredicate* predicate);
+
 };
 
 class IsWorkerUnderAttack : public Predicate::Predicate

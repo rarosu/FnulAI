@@ -55,13 +55,24 @@ void Commander::computeActions()
 	if (currentState == DEFEND)
 	{
 		// TODO: Need a way of knowing whether a defensive squad is idle, or defending a place
+		std::vector<Squad*> responseSquads = getSquadsMatchingPredicate(squads, &IsDefensiveSquad());
 
 		// First check for workers under attack
 		std::vector<AttackLocation> locations = getWorkersUnderAttackSituation();
 		if (locations.size() > 0)
 		{
 			// Find an idle, nearby defensive squad to send over
-			Broodwar->printf("Worker is under attack: (%d, %d)", locations[0].position.x(), locations[0].position.y());
+			//std::vector<Squad*> responseSquads = getSquadsMatchingPredicate(responseSquads, &IsIdleSquad());
+			
+			if (responseSquads.size() > 0)
+			{
+				Broodwar->printf("Worker is under attack (%d, %d): squad found", locations[0].position.x(), locations[0].position.y());
+				responseSquads[0]->defend(locations[0].position);
+			}
+			else
+				Broodwar->printf("Worker is under attack (%d, %d): squad not found", locations[0].position.x(), locations[0].position.y());
+
+
 		}
 
 		// Secondly, check for structures being under attack
@@ -1080,11 +1091,80 @@ bool Commander::isSquadMovingToLocation(const TilePosition& location, int radius
 {
 	for (size_t i = 0; i < squads.size(); ++i)
 	{
+		// See if the squad is moving to the location
 		if (squads[i]->getGoal().getDistance(location) < radius)
+			return true;
+
+		// See if the squad is already at the location
+		if (squads[i]->getCenterAgent()->getUnit()->getTilePosition().getDistance(location) < radius)
 			return true;
 	}
 
 	return false;
+}
+
+
+bool Commander::IsDefensiveSquad::Evaluate(Squad* squad)
+{
+	if (squad != NULL)
+	{
+		return squad->isDefensive();
+	}
+
+	return false;
+}
+
+bool Commander::IsOffensiveSquad::Evaluate(Squad* squad)
+{
+	if (squad != NULL)
+	{
+		return squad->isOffensive();
+	}
+
+	return false;
+}
+
+bool Commander::IsIdleSquad::Evaluate(Squad* squad)
+{
+	if (squad != NULL)
+	{
+		// If they have a goal, they are moving and thus are not idle.
+		if (squad->hasGoal())
+			return false;
+		if (squad->isBunkerDefend())
+			return false;
+		if (squad->isAttacking())
+			return false;
+		if (squad->isUnderAttack())
+			return false;
+
+		return true;
+
+		/*
+		if (squad->isRequired() && !squad->isActive())
+			return false;
+		return !squad->isUnderAttack() && 
+			   !squad->isAttacking() && 
+			   !squad->isBunkerDefend() && 
+			   squad->getCurrentState() == Squad::STATE_NOT_SET &&
+			   squad->hasGoal();
+		*/
+	}
+
+	return false;
+}
+
+
+std::vector<Squad*> Commander::getSquadsMatchingPredicate(const std::vector<Squad*>& squads, SquadPredicate* predicate)
+{
+	std::vector<Squad*> result;
+	for (size_t i = 0; i < squads.size(); ++i)
+	{
+		if (predicate->Evaluate(squads[i]))
+			result.push_back(squads[i]);
+	}
+
+	return result;
 }
 
 
