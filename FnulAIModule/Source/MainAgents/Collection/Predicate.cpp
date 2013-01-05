@@ -101,6 +101,20 @@ namespace Predicate
 		return false;
 	}
 
+	IsType::IsType(const BWAPI::UnitType& type)
+		: m_type(type)
+	{}
+
+	bool IsType::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0 && unit->getType().getID() == m_type.getID())
+			return true;
+
+		return false;
+
+	}
+			
+
 	bool IsCommandCenter::Evaluate(BWAPI::Unit* unit)
 	{
 		if (unit != NULL && unit->getHitPoints() > 0)
