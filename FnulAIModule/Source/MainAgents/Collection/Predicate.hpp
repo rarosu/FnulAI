@@ -68,6 +68,16 @@ namespace Predicate
 		BWAPI::TechType m_tech;
 	};
 
+	class IsType : public Predicate
+	{
+	public:
+		IsType(const BWAPI::UnitType& type);
+
+		bool Evaluate(BWAPI::Unit* unit);
+	private:
+		BWAPI::UnitType m_type;
+	};
+
 	class IsCommandCenter : public Predicate
 	{
 	public:
