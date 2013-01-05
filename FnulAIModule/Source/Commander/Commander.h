@@ -189,7 +189,6 @@ public:
 	std::vector<AttackLocation> getWorkersUnderAttackSituation();
 	std::vector<AttackLocation> getStructuresUnderAttackSituation();
 	std::vector<TilePosition> getMineralFieldsRequiringDefense();
-	std::vector<TilePosition> getChokePointsRequiringDefense();
 
 	/** Get the best locations to put offensive squads at the moment. The further
 	ahead in the list the locations are, the more prioritized they are.  */

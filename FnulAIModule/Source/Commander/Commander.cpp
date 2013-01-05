@@ -54,6 +54,32 @@ void Commander::computeActions()
 
 	if (currentState == DEFEND)
 	{
+		// TODO: Need a way of knowing whether a defensive squad is idle, or defending a place
+
+		// First check for workers under attack
+		std::vector<AttackLocation> locations = getWorkersUnderAttackSituation();
+		if (locations.size() > 0)
+		{
+			// Find an idle, nearby defensive squad to send over
+			Broodwar->printf("Worker is under attack: (%d, %d)", locations[0].position.x(), locations[0].position.y());
+		}
+
+		// Secondly, check for structures being under attack
+		locations = getStructuresUnderAttackSituation();
+		if (locations.size() > 0)
+		{
+			// Find an idle, nearby defensive squad to send over
+			Broodwar->printf("Structure is under attack: (%d, %d)", locations[0].position.x(), locations[0].position.y());
+		}
+
+		// Thirdly, check for mineral fields requiring defense
+		std::vector<TilePosition> mineralFieldLocations = getMineralFieldsRequiringDefense();
+		if (mineralFieldLocations.size() > 0)
+		{
+			// Find an idle, nearby defensive squad to send over
+		}
+
+		/*
 		TilePosition defSpot = findChokePoint();
 		for (int i = 0; i < (int)squads.size(); i++)
 		{
@@ -65,6 +91,7 @@ void Commander::computeActions()
 				}
 			}
 		}
+		*/
 	}
 
 	if (currentState == ATTACK)
@@ -988,6 +1015,8 @@ std::vector<Commander::AttackLocation> Commander::getStructuresUnderAttackSituat
 	{
 		locations.push_back(determineAttackLocationSituation(structuresUnderAttack[i]));
 	}
+
+	return locations;
 }
 
 std::vector<TilePosition> Commander::getMineralFieldsRequiringDefense()
