@@ -57,21 +57,28 @@ void Commander::computeActions()
 	{
 		// Find a defensive squad that is idle (not moving to defend or in combat)
 		std::vector<Squad*> responseSquads = getSquadsMatchingPredicate(squads, &IsDefensiveSquad());
-		responseSquads = getSquadsMatchingPredicate(responseSquads, &IsActiveSquad());
+		responseSquads = getSquadsMatchingPredicate(responseSquads, &IsNonEmpty());
 		responseSquads = getSquadsMatchingPredicate(responseSquads, &IsIdleSquad());
 		
 
 		if (responseSquads.size() == 0)
 		{
 			// If no defensive squad is found, just grab any idle squad
-			responseSquads = getSquadsMatchingPredicate(squads, &IsActiveSquad());
+			responseSquads = getSquadsMatchingPredicate(squads, &IsNonEmpty());
 			responseSquads = getSquadsMatchingPredicate(responseSquads, &IsIdleSquad());
 		}
 
 		if (responseSquads.size() != 0)
 		{
-			Broodwar->printf("Found a squad");
+			/*
+			Broodwar->printf("Found response squads: ");
+			for (size_t i = 0; i < responseSquads.size(); ++i)
+			{
+				Broodwar->printf("SQ %d", responseSquads[i]->getID());
+			}
+			*/
 
+			/*
 			// First check for workers under attack
 			std::vector<AttackLocation> locations = getWorkersUnderAttackSituation();
 			for (size_t i = 0; i < locations.size(); ++i)
@@ -116,6 +123,7 @@ void Commander::computeActions()
 					Broodwar->printf("Selecting squad %d to protect mineral field at (%d, %d)", responseSquads[selectedSquad]->getID(), mineralFieldLocations[i].x(), mineralFieldLocations[i].y());
 				}
 			}
+			*/
 		}
 		
 
@@ -980,16 +988,21 @@ bool Commander::checkUnfinishedBuildings()
 
 void Commander::printInfo()
 {
-	Broodwar->drawTextScreen(295,0,"Attacking squads:");
+	Broodwar->drawTextScreen(295, 0, "Squads:");
 	int no = 0;
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
+		Squad* sq = squads[i];
+		Broodwar->drawTextScreen(295,no*16+16, "SQ %d: (%d/%d)", sq->getID(), sq->getSize(), sq->getTotalUnits());
+		no++;
+		/*
 		Squad* sq = squads.at(i);
 		if (sq->isRequired())
 		{
 			Broodwar->drawTextScreen(295,no*16+16, "SQ %d: (%d/%d)", sq->getID(), sq->getSize(), sq->getTotalUnits());
 			no++;
 		}
+		*/
 	}
 
 	//Broodwar->drawTextScreen(440,32, "Own Deadscore: %d", ownDeadScore);
@@ -1209,6 +1222,17 @@ bool Commander::IsIdleSquad::Evaluate(Squad* squad)
 		return true;
 	}
 
+	return false;
+}
+
+bool Commander::IsNonEmpty::Evaluate(Squad* squad)
+{
+	if (squad != NULL)
+	{
+		if (squad->getSize() > 0)
+			return true;
+	}
+	
 	return false;
 }
 

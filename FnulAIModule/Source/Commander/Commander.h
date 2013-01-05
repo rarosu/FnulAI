@@ -237,6 +237,12 @@ public:
 		bool Evaluate(Squad* squad);
 	};
 
+	class IsNonEmpty : public Commander::SquadPredicate
+	{
+	public:
+		bool Evaluate(Squad* squad);
+	};
+
 	/** Get the subset of squads that match a certain predicate */
 	std::vector<Squad*> getSquadsMatchingPredicate(const std::vector<Squad*>& squads, SquadPredicate* predicate);
 
