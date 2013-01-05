@@ -147,24 +147,7 @@ void Commander::computeActions()
 				if (!erased)
 					i++;
 			}
-		}
-		
-
-		// TODO: Above code SHOULD replace this, eventually		
-		/*
-		TilePosition defSpot = findChokePoint();
-		for (int i = 0; i < (int)squads.size(); i++)
-		{
-			if (!squads.at(i)->hasGoal())
-			{
-				if (defSpot.x() != -1)
-				{
-					squads.at(i)->defend(defSpot);
-				}
-			}
-		}
-		*/
-		
+		}		
 	}
 
 	if (currentState == ATTACK)

@@ -20,6 +20,11 @@ public:
 
 	/** Called each update to issue orders. */
 	void computeActions();
+private:
+	bool shouldBeInSiege();
+	bool isInStationaryDefensiveSquad();
+	bool isThreatened();
+	bool hasTargetsInRange();
 };
 
 #endif

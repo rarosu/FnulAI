@@ -46,7 +46,6 @@ void AIloop::addUnit(Unit* unit)
 {
 	AgentManager::Instance().addAgent(unit);
 
-	// TODO: wut? Buildings are not in the build order?
 	//Remove from buildorder if this is a building
 	if (unit->getType().isBuilding())
 	{

@@ -73,7 +73,17 @@ namespace Predicate
 	{
 		if (unit != NULL && unit->getHitPoints() > 0)
 		{
-			return BWAPI::Broodwar->allies().find(unit->getPlayer()) == BWAPI::Broodwar->allies().end();
+			return BWAPI::Broodwar->enemies().find(unit->getPlayer()) != BWAPI::Broodwar->enemies().end();
+		}
+
+		return false;
+	}
+
+	bool IsFriendly::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			return BWAPI::Broodwar->allies().find(unit->getPlayer()) != BWAPI::Broodwar->allies().end();
 		}
 
 		return false;
@@ -111,9 +121,27 @@ namespace Predicate
 			return true;
 
 		return false;
+	}
 
+	bool HasGroundWeapon::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			return unit->getType().groundWeapon() != BWAPI::WeaponTypes::None;
+		}
+
+		return false;
 	}
 			
+	bool HasAirWeapon::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			return unit->getType().airWeapon() != BWAPI::WeaponTypes::None;
+		}
+
+		return false;
+	}
 
 	bool IsCommandCenter::Evaluate(BWAPI::Unit* unit)
 	{
