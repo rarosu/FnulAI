@@ -115,7 +115,6 @@ void AIloop::show_debug()
 		}
 
 		// Type manager information
-		AgentManager::Instance().printDebugInfo();
 		BuildPlanner::Instance().printInfo();
 		ExplorationManager::Instance().printInfo();
 		Commander::Instance().printInfo();

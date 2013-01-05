@@ -6,6 +6,7 @@
 #include <Managers\ResourceManager.h>
 #include <MainAgents\WorkerAgent.h>
 #include <Utils\Profiler.h>
+#include <MainAgents\Collection\Predicate.hpp>
 
 
 AgentManager::AgentManager()
@@ -25,11 +26,6 @@ AgentManager::~AgentManager()
 vector<BaseAgent*> AgentManager::getAgents()
 {
 	return agents;
-}
-
-const UnitCollection& AgentManager::getOurUnits() const
-{
-	return m_ourUnits;
 }
 
 int AgentManager::size()
@@ -157,7 +153,6 @@ void AgentManager::addAgent(Unit* unit)
 	{
 		BaseAgent* newAgent = AgentFactory::Instance().createAgent(unit);
 		agents.push_back(newAgent);
-		m_ourUnits.m_units.push_back(newAgent->getUnit());
 
 		if (newAgent->isBuilding())
 		{
@@ -190,16 +185,6 @@ void AgentManager::removeAgent(Unit* unit)
 			break;
 		}
 	}
-
-	// Remove it from our unit list
-	for (int i = 0; i < m_ourUnits.m_units.size(); ++i)
-	{
-		if (m_ourUnits.m_units[i] == unit)
-		{
-			m_ourUnits.m_units.erase(m_ourUnits.m_units.begin() + i);
-			break;
-		}
-	}
 }
 
 void AgentManager::morphDrone(Unit* unit)
@@ -209,16 +194,6 @@ void AgentManager::morphDrone(Unit* unit)
 		if (agents.at(i)->matches(unit))
 		{
 			agents.erase(agents.begin() + i);
-			
-			// Remove it from the unit list
-			for (size_t k = 0; k < m_ourUnits.m_units.size(); ++k)
-			{
-				if (m_ourUnits.m_units[k] == unit)
-				{
-					m_ourUnits.m_units.erase(m_ourUnits.m_units.begin() + k);
-					break;
-				}
-			}
 
 			addAgent(unit);
 			return;
@@ -420,6 +395,11 @@ int AgentManager::countNoBases()
 	return cnt;
 }
 
+vector<BaseAgent*> AgentManager::getBases()
+{
+	return getAgentsMatchingPredicate(agents, &Predicate::IsCommandCenter());
+}
+
 bool AgentManager::unitsInArea(TilePosition pos, int tileWidth, int tileHeight, int unitID)
 {
 	for (int i = 0; i < (int)agents.size(); i++)
@@ -462,11 +442,4 @@ TilePosition AgentManager::getClosestDetector(TilePosition startPos)
 	}
 
 	return pos;
-}
-
-void AgentManager::printDebugInfo()
-{
-	BWAPI::Broodwar->drawTextScreen(10, 200, "Air agents: %d\nGround agents: %d", 
-		m_ourUnits.getUnitsMatchingPredicate(&Predicate::IsAir()).m_units.size(), 
-		m_ourUnits.getUnitsMatchingPredicate(&Predicate::IsGround()).m_units.size());
 }

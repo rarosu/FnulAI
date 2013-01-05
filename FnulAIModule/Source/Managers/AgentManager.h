@@ -3,7 +3,6 @@
 
 #include <BWAPI.h>
 #include <MainAgents\BaseAgent.h>
-#include <MainAgents\Collection\UnitCollection.hpp>
 #include <Utils\cthread.h>
 #include <r2-singleton.hpp>
 
@@ -23,10 +22,8 @@ using namespace std;
 class AgentManager : public r2::Singleton<AgentManager> {
 
 private:
-	UnitCollection m_ourUnits;
 	vector<BaseAgent*> agents;
 	int lastCallFrame;
-
 public:
 	AgentManager();
 	~AgentManager();
@@ -71,11 +68,11 @@ public:
 	/** Returns the number of bases the player has. */
 	int countNoBases();
 
+	/** Get all the terran command centers we have */
+	vector<BaseAgent*> getBases();
+
 	/** Returns a list of all agents in the container. */
 	vector<BaseAgent*> getAgents();
-
-	/** Return a list of our units (the units we have agents for) */
-	const UnitCollection& getOurUnits() const;
 
 	/** Returns the number of agents the exists in the vector. */
 	int size();
@@ -106,9 +103,6 @@ public:
 
 	/** Removes inactive agents from the container. Shouldn't be called too often. */
 	void cleanup();
-
-	/** Print some debug info regarding agents */
-	void printDebugInfo();
 };
 
 #endif

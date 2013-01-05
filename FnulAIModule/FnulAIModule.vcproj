@@ -434,10 +434,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\MainAgents\Collection\UnitCollection.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\Commander\UnitSetup.cpp"
 				>
 			</File>
@@ -737,10 +733,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\UnitAgents\UnitAgent.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\MainAgents\Collection\UnitCollection.hpp"
 				>
 			</File>
 			<File

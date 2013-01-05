@@ -179,6 +179,9 @@ public:
 	/** Returns true if this agent is under attack, i.e. lost hitpoints since last check. */
 	bool isUnderAttack();
 
+	/** Get all units within a certain radius */
+	std::vector<BWAPI::Unit*> getUnitsWithinRadius(int radius);
+
 	/** Returns true if this agent is damaged. */
 	bool isDamaged();
 

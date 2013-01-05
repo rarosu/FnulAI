@@ -69,6 +69,16 @@ namespace Predicate
 		return false;
 	}
 
+	bool IsHostile::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			return BWAPI::Broodwar->allies().find(unit->getPlayer()) == BWAPI::Broodwar->allies().end();
+		}
+
+		return false;
+	}
+
 
 	HasTech::HasTech(const BWAPI::TechType& tech)
 		: m_tech(tech)
@@ -86,12 +96,50 @@ namespace Predicate
 				if ((*ability) == m_tech)
 					return true;
 			}
-
-			return false;
 		}
 
-		// Agent is deleted
 		return false;
 	}
+
+	bool IsCommandCenter::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			return unit->getType() == BWAPI::UnitTypes::Terran_Command_Center;
+		}
+
+		return false;
+	}
+}
+
+
+std::vector<BWAPI::Unit*> getUnitsMatchingPredicate(const std::vector<BWAPI::Unit*>& units, Predicate::Predicate* predicate)
+{
+	std::vector<BWAPI::Unit*> result;
+
+	for (size_t i = 0; i < units.size(); ++i)
+	{
+		if (predicate->Evaluate(units[i]))
+		{
+			result.push_back(units[i]);
+		}
+	}
+
+	return result;
+}
+
+std::vector<BaseAgent*> getAgentsMatchingPredicate(const std::vector<BaseAgent*>& agents, Predicate::Predicate* predicate)
+{
+	std::vector<BaseAgent*> result;
+
+	for (size_t i = 0; i < agents.size(); ++i)
+	{
+		if (predicate->Evaluate(agents[i]->getUnit()))
+		{
+			result.push_back(agents[i]);
+		}
+	}
+
+	return result;
 }
 

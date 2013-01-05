@@ -50,9 +50,9 @@ private:
 	Config m_config;
 	Profiler m_profiler;
 
-	Commander m_commander;
 	AgentFactory m_agentFactory;
 	AgentManager m_agentManager;
+	Commander m_commander;
 	BuildPlanner m_buildPlanner;
 	CoverMap m_coverMap;
 	ExplorationManager m_explorationManager;

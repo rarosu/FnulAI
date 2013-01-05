@@ -49,6 +49,11 @@ int Squad::getID()
 	return id;
 }
 
+int Squad::getCurrentState()
+{
+	return currentState;
+}
+
 bool Squad::isRequired()
 {
 	return required;
@@ -190,16 +195,6 @@ void Squad::computeActions()
 	}
 
 	checkAttack();
-
-	// TODO: Remove this
-	for (size_t i = 0; i < agents.size(); ++i)
-	{
-		if (agents[i]->isUnit())
-		{
-			UnitAgent* a = dynamic_cast<UnitAgent*>(agents[i]);
-			a->issueCommand(BWAPI::UnitCommandTypes::Cloak);
-		}
-	}
 }
 
 bool Squad::isAttacking()

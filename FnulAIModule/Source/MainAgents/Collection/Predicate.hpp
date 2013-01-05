@@ -2,6 +2,8 @@
 #define PREDICATE_HPP
 
 #include <BWAPI.h>
+#include <vector>
+#include <MainAgents\BaseAgent.h>
 
 namespace Predicate
 {
@@ -50,6 +52,12 @@ namespace Predicate
 		bool Evaluate(BWAPI::Unit* unit);
 	};
 
+	class IsHostile : public Predicate
+	{
+	public:
+		bool Evaluate(BWAPI::Unit* unit);
+	};
+
 	class HasTech : public Predicate
 	{
 	public:
@@ -59,8 +67,15 @@ namespace Predicate
 	private:
 		BWAPI::TechType m_tech;
 	};
+
+	class IsCommandCenter : public Predicate
+	{
+	public:
+		bool Evaluate(BWAPI::Unit* unit);
+	};
 }
 
-
+std::vector<BWAPI::Unit*> getUnitsMatchingPredicate(const std::vector<BWAPI::Unit*>& units, Predicate::Predicate* predicate);
+std::vector<BaseAgent*> getAgentsMatchingPredicate(const std::vector<BaseAgent*>& agents, Predicate::Predicate* predicate);
 
 #endif
