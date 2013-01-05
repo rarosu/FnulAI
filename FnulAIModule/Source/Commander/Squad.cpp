@@ -106,7 +106,7 @@ int Squad::size()
 	int no = 0;
 	for(int i = 0; i < (int)agents.size(); i++)
 	{
-		if (agents.at(i)->isAlive())
+		if (agents.at(i)->isAlive() && agents[i]->getUnit()->getRemainingBuildTime() <= 0)
 		{
 			no++;
 		}

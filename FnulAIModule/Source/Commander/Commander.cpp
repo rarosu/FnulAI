@@ -71,14 +71,6 @@ void Commander::computeActions()
 		if (responseSquads.size() != 0)
 		{
 			/*
-			Broodwar->printf("Found response squads: ");
-			for (size_t i = 0; i < responseSquads.size(); ++i)
-			{
-				Broodwar->printf("SQ %d", responseSquads[i]->getID());
-			}
-			*/
-
-			/*
 			// First check for workers under attack
 			std::vector<AttackLocation> locations = getWorkersUnderAttackSituation();
 			for (size_t i = 0; i < locations.size(); ++i)
@@ -94,6 +86,7 @@ void Commander::computeActions()
 				}
 			}
 
+			
 			// Secondly, check for structures being under attack
 			locations = getStructuresUnderAttackSituation();
 			for (size_t i = 0; i < locations.size(); ++i)
@@ -109,6 +102,7 @@ void Commander::computeActions()
 				}
 			}
 
+			*/
 			// Thirdly, check for mineral fields requiring defense
 			std::vector<TilePosition> mineralFieldLocations = getMineralFieldsRequiringDefense();
 			for (size_t i = 0; i < mineralFieldLocations.size(); ++i)
@@ -117,17 +111,21 @@ void Commander::computeActions()
 				if (!isSquadMovingToLocation(squads, mineralFieldLocations[i], 30))
 				{
 					size_t selectedSquad = findNearestSquad(responseSquads, mineralFieldLocations[i]);
+					
 					responseSquads[selectedSquad]->defend(mineralFieldLocations[i]);
-					responseSquads.erase(responseSquads.begin() + selectedSquad);
-
+					
+					// TODO: Fixme
+					//responseSquads.erase(responseSquads.begin() + selectedSquad);
+					
 					Broodwar->printf("Selecting squad %d to protect mineral field at (%d, %d)", responseSquads[selectedSquad]->getID(), mineralFieldLocations[i].x(), mineralFieldLocations[i].y());
 				}
 			}
-			*/
+			
 		}
 		
 
 		// TODO: Above code SHOULD replace this, eventually		
+		/*
 		TilePosition defSpot = findChokePoint();
 		for (int i = 0; i < (int)squads.size(); i++)
 		{
@@ -139,6 +137,7 @@ void Commander::computeActions()
 				}
 			}
 		}
+		*/
 		
 	}
 
@@ -1162,7 +1161,7 @@ size_t Commander::findNearestSquad(const std::vector<Squad*>& squads, const Tile
 	int minimumIndex = -1;
 	for (size_t i = 0; i < squads.size(); ++i)
 	{
-		BWAPI::TilePosition squadPosition = squads[i]->getCenterAgent()->getUnit()->getTilePosition();
+		BWAPI::TilePosition squadPosition = squads[i]->getCenter();
 		
 		double distance = squadPosition.getDistance(nearPosition);
 		if (distance < minimumDistance)
@@ -1229,7 +1228,7 @@ bool Commander::IsNonEmpty::Evaluate(Squad* squad)
 {
 	if (squad != NULL)
 	{
-		if (squad->getSize() > 0)
+		if (squad->size() > 0)
 			return true;
 	}
 	
