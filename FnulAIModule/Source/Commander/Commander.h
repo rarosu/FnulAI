@@ -202,9 +202,8 @@ public:
 	/** See if a squad is moving to a certain location */
 	bool isSquadMovingToLocation(const TilePosition& location, int radius);
 
-	/** Find the nearest, idle defensive squad to a position. Idle means that they are
-	not protecting something at the moment. */
-	Squad* findNearestIdleDefensiveSquad(const TilePosition& nearPosition);
+	/** Find the index of the nearest squad to a position out of the given squads */
+	size_t findNearestSquad(const std::vector<Squad*>& squads, const TilePosition& nearPosition);
 
 
 	class SquadPredicate

@@ -54,40 +54,59 @@ void Commander::computeActions()
 
 	if (currentState == DEFEND)
 	{
-		// TODO: Need a way of knowing whether a defensive squad is idle, or defending a place
+		// Find a defensive squad that is idle (not moving to defend or in combat)
 		std::vector<Squad*> responseSquads = getSquadsMatchingPredicate(squads, &IsDefensiveSquad());
+		responseSquads = getSquadsMatchingPredicate(responseSquads, &IsIdleSquad());
+
+		if (responseSquads.size() == 0)
+		{
+			// If no defensive squad is found, just grab any idle squad
+			responseSquads = getSquadsMatchingPredicate(squads, &IsIdleSquad());
+		}
 
 		// First check for workers under attack
 		std::vector<AttackLocation> locations = getWorkersUnderAttackSituation();
-		if (locations.size() > 0)
+		for (size_t i = 0; i < locations.size(); ++i)
 		{
-			// Find an idle, nearby defensive squad to send over
-			//std::vector<Squad*> responseSquads = getSquadsMatchingPredicate(responseSquads, &IsIdleSquad());
-			
-			if (responseSquads.size() > 0)
+			Broodwar->printf("Worker requiring defense located (%d, %d)", locations[i].position.x(), locations[i].position.y());
+			if (!isSquadMovingToLocation(locations[i].position, 30))
 			{
-				Broodwar->printf("Worker is under attack (%d, %d): squad found", locations[0].position.x(), locations[0].position.y());
-				responseSquads[0]->defend(locations[0].position);
+				size_t selectedSquad = findNearestSquad(responseSquads, locations[i].position);
+				responseSquads[selectedSquad]->defend(locations[i].position);
+				responseSquads.erase(responseSquads.begin() + selectedSquad);
+
+				Broodwar->printf("Selecting squad %d to protect worker at (%d, %d)", responseSquads[selectedSquad]->getID(), locations[i].position.x(), locations[i].position.y());
 			}
-			else
-				Broodwar->printf("Worker is under attack (%d, %d): squad not found", locations[0].position.x(), locations[0].position.y());
-
-
 		}
 
 		// Secondly, check for structures being under attack
 		locations = getStructuresUnderAttackSituation();
-		if (locations.size() > 0)
+		for (size_t i = 0; i < locations.size(); ++i)
 		{
-			// Find an idle, nearby defensive squad to send over
-			Broodwar->printf("Structure is under attack: (%d, %d)", locations[0].position.x(), locations[0].position.y());
+			Broodwar->printf("Structure requiring defense located (%d, %d)", locations[i].position.x(), locations[i].position.y());
+			if (!isSquadMovingToLocation(locations[i].position, 30))
+			{
+				size_t selectedSquad = findNearestSquad(responseSquads, locations[i].position);
+				responseSquads[selectedSquad]->defend(locations[i].position);
+				responseSquads.erase(responseSquads.begin() + selectedSquad);
+
+				Broodwar->printf("Selecting squad %d to protect structure at (%d, %d)", responseSquads[selectedSquad]->getID(), locations[i].position.x(), locations[i].position.y());
+			}
 		}
 
 		// Thirdly, check for mineral fields requiring defense
 		std::vector<TilePosition> mineralFieldLocations = getMineralFieldsRequiringDefense();
-		if (mineralFieldLocations.size() > 0)
+		for (size_t i = 0; i < mineralFieldLocations.size(); ++i)
 		{
-			// Find an idle, nearby defensive squad to send over
+			Broodwar->printf("Mineral field requiring defense located (%d, %d)", mineralFieldLocations[i].x(), mineralFieldLocations[i].y());
+			if (!isSquadMovingToLocation(mineralFieldLocations[i], 30))
+			{
+				size_t selectedSquad = findNearestSquad(responseSquads, locations[i].position);
+				responseSquads[selectedSquad]->defend(locations[i].position);
+				responseSquads.erase(responseSquads.begin() + selectedSquad);
+
+				Broodwar->printf("Selecting squad %d to protect mineral field at (%d, %d)", responseSquads[selectedSquad]->getID(), mineralFieldLocations[i].x(), mineralFieldLocations[i].y());
+			}
 		}
 
 		/*
@@ -1103,6 +1122,25 @@ bool Commander::isSquadMovingToLocation(const TilePosition& location, int radius
 	return false;
 }
 
+size_t Commander::findNearestSquad(const std::vector<Squad*>& squads, const TilePosition& nearPosition)
+{
+	double minimumDistance = 1000000;
+	int minimumIndex = -1;
+	for (size_t i = 0; i < squads.size(); ++i)
+	{
+		BWAPI::TilePosition squadPosition = squads[i]->getCenterAgent()->getUnit()->getTilePosition();
+		
+		double distance = squadPosition.getDistance(nearPosition);
+		if (distance < minimumDistance)
+		{
+			minimumDistance = distance;
+			minimumIndex = i;
+		}
+	}
+
+	return static_cast<size_t>(minimumIndex);
+}
+
 
 bool Commander::IsDefensiveSquad::Evaluate(Squad* squad)
 {
@@ -1139,16 +1177,6 @@ bool Commander::IsIdleSquad::Evaluate(Squad* squad)
 			return false;
 
 		return true;
-
-		/*
-		if (squad->isRequired() && !squad->isActive())
-			return false;
-		return !squad->isUnderAttack() && 
-			   !squad->isAttacking() && 
-			   !squad->isBunkerDefend() && 
-			   squad->getCurrentState() == Squad::STATE_NOT_SET &&
-			   squad->hasGoal();
-		*/
 	}
 
 	return false;
