@@ -47,6 +47,23 @@ bool MarineAgent::isNeededInBunker()
 void MarineAgent::computeActions()
 {
 	if (isNeededInBunker()) return;
+	
+	if (enemyUnitsWithinRange(type.groundWeapon().maxRange) > 0)
+	{
+		std::vector<BaseAgent*> mySquad = Commander::Instance().getSquad(squadID)->getMembers();
+		bool hasMedic = false;
+		for (size_t i = 0; i < mySquad.size(); ++i)
+		{
+			if (mySquad[i]->getUnitType().getName() == "Terran Medic")
+			{
+				hasMedic = true;
+				break;
+			}
+		}
+
+		if (hasMedic && unit->getStimTimer() == 0)
+			unit->useTech(BWAPI::TechTypes::Stim_Packs);
+	}
 
 	bool defensive = false;
 	PFManager::Instance().computeAttackingUnitActions(this, goal, defensive);
