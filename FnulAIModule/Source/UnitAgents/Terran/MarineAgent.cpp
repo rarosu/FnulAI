@@ -60,7 +60,7 @@ void MarineAgent::computeActions()
 		
 		// If there are medics and no stim is active, activate stim
 		if (hasMedic && unit->getStimTimer() == 0)
-			unit->useTech(BWAPI::TechTypes::Stim_Packs)
+			unit->useTech(BWAPI::TechTypes::Stim_Packs);
 	}
 
 	bool defensive = false;
