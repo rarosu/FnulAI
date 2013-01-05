@@ -58,6 +58,12 @@ namespace Predicate
 		bool Evaluate(BWAPI::Unit* unit);
 	};
 
+	class IsFriendly : public Predicate
+	{
+	public:
+		bool Evaluate(BWAPI::Unit* unit);
+	};
+
 	class HasTech : public Predicate
 	{
 	public:
@@ -76,6 +82,18 @@ namespace Predicate
 		bool Evaluate(BWAPI::Unit* unit);
 	private:
 		BWAPI::UnitType m_type;
+	};
+
+	class HasGroundWeapon : public Predicate
+	{
+	public:
+		bool Evaluate(BWAPI::Unit* unit);
+	};
+
+	class HasAirWeapon : public Predicate
+	{
+	public:
+		bool Evaluate(BWAPI::Unit* unit);
 	};
 
 	class IsCommandCenter : public Predicate
