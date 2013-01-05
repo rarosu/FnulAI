@@ -341,3 +341,14 @@ TilePosition BaseAgent::getGoal()
 	return goal;
 }
 
+std::vector<BWAPI::Unit*> BaseAgent::getUnitsWithinRadius(int radius)
+{
+	std::vector<BWAPI::Unit*> result;
+
+	std::set<BWAPI::Unit*> resultSet = getUnit()->getUnitsInRadius(radius);
+	for (std::set<BWAPI::Unit*>::iterator it = resultSet.begin(); it != resultSet.end(); it++)
+		result.push_back(*it);
+
+	return result;
+}
+

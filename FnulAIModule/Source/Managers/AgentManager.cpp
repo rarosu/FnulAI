@@ -6,6 +6,7 @@
 #include <Managers\ResourceManager.h>
 #include <MainAgents\WorkerAgent.h>
 #include <Utils\Profiler.h>
+#include <MainAgents\Collection\Predicate.hpp>
 
 
 AgentManager::AgentManager()
@@ -392,6 +393,11 @@ int AgentManager::countNoBases()
 		}
 	}
 	return cnt;
+}
+
+vector<BaseAgent*> AgentManager::getBases()
+{
+	return getAgentsMatchingPredicate(agents, &Predicate::IsCommandCenter());
 }
 
 bool AgentManager::unitsInArea(TilePosition pos, int tileWidth, int tileHeight, int unitID)

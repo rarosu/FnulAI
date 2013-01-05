@@ -3,6 +3,7 @@
 
 #include <Commander\Squad.h>
 #include <MainAgents\BaseAgent.h>
+#include <MainAgents\Collection\Predicate.hpp>
 #include <r2-singleton.hpp>
 
 using namespace BWAPI;
@@ -168,6 +169,67 @@ public:
 
 	/** Adds a bunker squad when a Terran Bunker has been created. */
 	void addBunkerSquad();
+
+
+	/** Defines a location to attack or a location that is under attack */
+	struct AttackLocation
+	{
+		TilePosition position;
+		bool requiresAntiAir;
+		bool requiresAntiGround;
+		bool attackerKnown;
+
+		int attackStrength;
+	};
+
+	/**
+		Get locations and situations for defensive squads, to make 
+		decisions out of.
+	*/
+	std::vector<AttackLocation> getWorkersUnderAttackSituation();
+	std::vector<AttackLocation> getStructuresUnderAttackSituation();
+	std::vector<TilePosition> getMineralFieldsRequiringDefense();
+	std::vector<TilePosition> getChokePointsRequiringDefense();
+
+	/** Get the best locations to put offensive squads at the moment. The further
+	ahead in the list the locations are, the more prioritized they are.  */
+	std::vector<AttackLocation> getOffenseLocations();
+
+	/**
+		Determine the situation for an agent under attack
+	*/
+	AttackLocation determineAttackLocationSituation(BaseAgent* agent);
+
+	/** See if a squad is moving to a certain location */
+	bool isSquadMovingToLocation(const TilePosition& location, int radius);
+};
+
+class IsWorkerUnderAttack : public Predicate::Predicate
+{
+public:
+	bool Evaluate(BWAPI::Unit* unit);
+};
+
+class IsStructureUnderAttack : public Predicate::Predicate
+{
+public:
+	bool Evaluate(BWAPI::Unit* unit);
+};
+
+class IsBaseUndefended : public Predicate::Predicate
+{
+public:
+	IsBaseUndefended(const std::vector<Squad*>& squads);
+
+	bool Evaluate(BWAPI::Unit* unit);
+private:
+	const std::vector<Squad*>& m_squads;
+};
+
+class HasBaseMineralFields : public Predicate::Predicate
+{
+public:
+	bool Evaluate(BWAPI::Unit* unit);
 };
 
 #endif

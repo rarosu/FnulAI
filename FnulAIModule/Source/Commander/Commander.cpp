@@ -140,6 +140,7 @@ bool Commander::shallEngage()
 		return false;
 	}
 
+	// Make sure all squads are ready
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
 		if (squads.at(i)->isRequired() && !squads.at(i)->isActive())
@@ -959,4 +960,171 @@ void Commander::addBunkerSquad()
 			}
 		}
 	}
+}
+
+std::vector<Commander::AttackLocation> Commander::getWorkersUnderAttackSituation()
+{
+	std::vector<AttackLocation> locations;
+
+	std::vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
+	std::vector<BaseAgent*> workersUnderAttack = getAgentsMatchingPredicate(agents, &IsWorkerUnderAttack());
+
+	for (size_t i = 0; i < workersUnderAttack.size(); ++i)
+	{
+		locations.push_back(determineAttackLocationSituation(workersUnderAttack[i]));
+	}
+
+	return locations;
+}
+
+std::vector<Commander::AttackLocation> Commander::getStructuresUnderAttackSituation()
+{
+	std::vector<AttackLocation> locations;
+
+	std::vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
+	std::vector<BaseAgent*> structuresUnderAttack = getAgentsMatchingPredicate(agents, &IsStructureUnderAttack());
+
+	for (size_t i = 0; i < structuresUnderAttack.size(); ++i)
+	{
+		locations.push_back(determineAttackLocationSituation(structuresUnderAttack[i]));
+	}
+}
+
+std::vector<TilePosition> Commander::getMineralFieldsRequiringDefense()
+{
+	std::vector<BaseAgent*> bases = AgentManager::Instance().getBases();
+	bases = getAgentsMatchingPredicate(bases, &IsBaseUndefended(squads));
+	bases = getAgentsMatchingPredicate(bases, &HasBaseMineralFields());
+
+	std::vector<TilePosition> result;
+	for (size_t i = 0; i < bases.size(); ++i)
+	{
+		result.push_back(bases[i]->getUnit()->getTilePosition());
+	}
+
+	return result;
+}
+
+
+/** Get the best locations to put offensive squads at the moment */
+std::vector<Commander::AttackLocation> Commander::getOffenseLocations()
+{
+	// Prioritize unguarded enemy expansions that still has mineral
+	
+
+	// Secondly prioritize unguarded supply depots/pylons/overlords
+	
+}
+
+Commander::AttackLocation Commander::determineAttackLocationSituation(BaseAgent* agent)
+{
+	AttackLocation loc;
+	loc.position = agent->getUnit()->getTilePosition();
+	loc.requiresAntiAir = false;
+	loc.requiresAntiGround = false;
+	loc.attackerKnown = false;
+	loc.attackStrength = 0;
+	
+	// Check all units around our attacked unit (search in siege tank range, to get hold of all units)
+	std::vector<BWAPI::Unit*> hostileUnits = agent->getUnitsWithinRadius(385);
+	hostileUnits = getUnitsMatchingPredicate(hostileUnits, &Predicate::IsHostile());
+
+	for (size_t k = 0; k < hostileUnits.size(); ++k)
+	{
+		if (hostileUnits[k]->isAttacking())
+		{
+			loc.attackerKnown = true;
+			loc.attackStrength += hostileUnits[k]->getType().destroyScore();
+
+			// Valid target, determine information about it
+			if (hostileUnits[k]->getType().isFlyer())
+				loc.requiresAntiAir = true;
+			else
+				loc.requiresAntiGround = true;
+		}
+	}
+
+	return loc;
+}
+
+bool Commander::isSquadMovingToLocation(const TilePosition& location, int radius)
+{
+	for (size_t i = 0; i < squads.size(); ++i)
+	{
+		if (squads[i]->getGoal().getDistance(location) < radius)
+			return true;
+	}
+
+	return false;
+}
+
+
+
+bool IsWorkerUnderAttack::Evaluate(BWAPI::Unit* unit)
+{
+	BaseAgent* agent = AgentManager::Instance().getAgent(unit->getID());
+	if (agent != NULL && agent->isAlive())
+	{
+		return unit->getType().isWorker() && agent->isUnderAttack();
+			
+	}
+
+	return false;
+}
+
+bool IsStructureUnderAttack::Evaluate(BWAPI::Unit* unit)
+{
+	BaseAgent* agent = AgentManager::Instance().getAgent(unit->getID());
+	if (agent != NULL && agent->isAlive())
+	{
+		return unit->getType().isBuilding() && agent->isUnderAttack();
+			
+	}
+
+	return false;
+}
+
+IsBaseUndefended::IsBaseUndefended(const std::vector<Squad*>& squads)
+	: m_squads(squads)
+{}
+
+bool IsBaseUndefended::Evaluate(BWAPI::Unit* unit)
+{
+	const int ACCEPT_DISTANCE = 20;
+
+	if (unit != NULL)
+	{
+		BaseAgent* agent = AgentManager::Instance().getAgent(unit->getID());
+		if (agent != NULL && agent->isAlive())
+		{
+			BWAPI::TilePosition baseLocation = unit->getTilePosition();
+
+			return !Commander::Instance().isSquadMovingToLocation(baseLocation, ACCEPT_DISTANCE);
+		}
+	}
+	
+	return false;
+}
+
+bool HasBaseMineralFields::Evaluate(BWAPI::Unit* unit)
+{
+	const int ACCEPT_DISTANCE = 50;
+
+	if (unit != NULL)
+	{
+		BaseAgent* agent = AgentManager::Instance().getAgent(unit->getID());
+		if (agent != NULL && agent->isAlive())
+		{
+			std::set<BWAPI::Unit*> nearbyUnits = unit->getUnitsInRadius(ACCEPT_DISTANCE);
+			for (std::set<BWAPI::Unit*>::iterator it = nearbyUnits.begin(); it != nearbyUnits.end(); it++)
+			{
+				if ((*it)->getType() == BWAPI::UnitTypes::Resource_Mineral_Field ||
+					(*it)->getType() == BWAPI::UnitTypes::Resource_Mineral_Field_Type_2 ||
+					(*it)->getType() == BWAPI::UnitTypes::Resource_Mineral_Field_Type_3)
+					return true;
+			}
+		}
+	}
+
+	return false;
 }

@@ -68,6 +68,9 @@ public:
 	/** Returns the number of bases the player has. */
 	int countNoBases();
 
+	/** Get all the terran command centers we have */
+	vector<BaseAgent*> getBases();
+
 	/** Returns a list of all agents in the container. */
 	vector<BaseAgent*> getAgents();
 
