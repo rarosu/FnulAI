@@ -201,10 +201,10 @@ public:
 
 	/** See if a squad is moving to a certain location */
 	bool isSquadMovingToLocation(const TilePosition& position, int radius);
-	bool isSquadMovingToLocation(const std::vector<Squad*>& squads, const TilePosition& location, int radius);
+	bool isSquadMovingToLocation(const std::vector<Squad*>& squadsSubset, const TilePosition& location, int radius);
 
 	/** Find the index of the nearest squad to a position out of the given squads */
-	size_t findNearestSquad(const std::vector<Squad*>& squads, const TilePosition& nearPosition);
+	int findNearestSquad(const std::vector<Squad*>& squadsSubset, const TilePosition& nearPosition);
 
 
 	class SquadPredicate
