@@ -23,6 +23,7 @@ void WraithAgent::computeActions()
 	std::vector<Unit*> enemy_vec(enemy_set.begin(), enemy_set.end());
 
 	enemy_vec = getUnitsMatchingPredicate(enemy_vec, &Predicate::IsHostile());
+	enemy_vec = getUnitsMatchingPredicate(enemy_vec, &Predicate::HasAirWeapon());
 	bool cloak = false;
 
 	// This loop decides if unit should be cloaked or not
@@ -35,9 +36,7 @@ void WraithAgent::computeActions()
 			break;
 		}
 
-		// Only cloak if enemy unit can attack this guy
-		if (enemy_vec[i]->getType().airWeapon() != BWAPI::WeaponTypes::None)
-			cloak = true;
+		cloak = true;
 	}
 
 	if (cloak)
