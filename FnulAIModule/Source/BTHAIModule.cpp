@@ -265,8 +265,9 @@ void BTHAIModule::onUnitCreate(BWAPI::Unit* unit)
 {
 	if (Broodwar->isReplay() || Broodwar->getFrameCount() <= 1) 
 		return;
-
-	m_loop.addUnit(unit);
+	
+	if (unit->getPlayer()->getID() == Broodwar->self()->getID())
+		m_loop.addUnit(unit);
 }
 
 void BTHAIModule::onUnitDestroy(BWAPI::Unit* unit) 

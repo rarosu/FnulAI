@@ -598,9 +598,11 @@ void BuildPlanner::expand(UnitType commandCenterUnit)
 	if (pos.x() == -1)
 	{
 		//No expansion site found.
+		Broodwar->printf("No expansion site found.");
 		return;
 	}
 
+	Broodwar->printf("Expansion site found!");
 	buildOrder.insert(buildOrder.begin(), commandCenterUnit);
 }
 

@@ -136,7 +136,7 @@ void StructureAgent::computeActions()
 			{
 				if (unit->getAddon() == NULL)
 				{
-					unit->buildAddon(UnitTypes::Terran_Physics_Lab);
+					unit->buildAddon(UnitTypes::Terran_Covert_Ops); // WE NEED COVERT OPS BUT NOT PHYSICS LAB
 				}
 			}
 			if (isOfType(UnitTypes::Terran_Starport))
