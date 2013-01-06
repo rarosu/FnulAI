@@ -223,14 +223,18 @@ bool Commander::shallEngage()
 		return false;
 	}
 
-	// Make sure all squads are ready
+	// Make sure all offensive squads are ready
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
-		if (squads.at(i)->isRequired() && !squads.at(i)->isActive())
+		if (squads[i]->isOffensive())
 		{
-			return false;
+			if (squads[i]->isRequired() && !squads[i]->isActive())
+			{
+				return false;
+			}
 		}
 	}
+
 	return true;
 }
 
@@ -1001,8 +1005,12 @@ void Commander::printInfo()
 	for (int i = 0; i < (int)squads.size(); i++)
 	{
 		Squad* sq = squads[i];
-		Broodwar->drawTextScreen(295,no*16+16, "SQ %d: (%d/%d)", sq->getID(), sq->getSize(), sq->getTotalUnits());
-		no++;
+		if (!sq->isBunkerDefend())
+		{
+			Broodwar->drawTextScreen(295,no*16+16, "SQ %d: (%d/%d)", sq->getID(), sq->getSize(), sq->getTotalUnits());
+			no++;
+		}
+		
 		/*
 		Squad* sq = squads.at(i);
 		if (sq->isRequired())
