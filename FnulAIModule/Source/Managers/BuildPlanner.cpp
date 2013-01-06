@@ -109,7 +109,7 @@ bool BuildPlanner::hasResourcesLeft()
 		}
 	}
 
-	if (totalMineralsLeft <= 1000)
+	if (totalMineralsLeft <= 4 * 1500)
 	{
 		return false;
 	}

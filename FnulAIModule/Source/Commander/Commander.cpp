@@ -1019,7 +1019,7 @@ void Commander::printInfo()
 
 void Commander::addBunkerSquad()
 {
-	Squad* bSquad = new Squad(100 + AgentManager::Instance().countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 5);
+	Squad* bSquad = new Squad(100 + AgentManager::Instance().countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 2);
 	bSquad->addSetup(UnitTypes::Terran_Marine, 4);
 	squads.push_back(bSquad);
 
