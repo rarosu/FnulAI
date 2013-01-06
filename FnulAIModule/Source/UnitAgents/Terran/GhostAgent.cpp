@@ -23,6 +23,23 @@ void GhostAgent::computeActions()
 	std::vector<Unit*> enemy_vec(enemy_set.begin(), enemy_set.end());
 
 	enemy_vec = getUnitsMatchingPredicate(enemy_vec, &Predicate::IsHostile());
+
+	std::vector<Unit*> enemy_mec = getUnitsMatchingPredicate(enemy_vec, &Predicate::IsMech());
+	Unit* lockdown_target = NULL;
+	if (!enemy_mec.empty())
+	{
+		lockdown_target = enemy_mec.front();
+		for (size_t i = 0; i < enemy_mec.size(); ++i)
+		{
+			if (enemy_mec[i]->getType().destroyScore() > lockdown_target->getType().destroyScore() &&
+				!enemy_mec[i]->isLockedDown())
+				lockdown_target = enemy_mec[i];
+		}
+	}
+	if (lockdown_target != NULL) {
+		if (unit->useTech(BWAPI::TechTypes::Lockdown, lockdown_target))
+			Broodwar->printf("Lockdown used!"); }
+		
 	enemy_vec = getUnitsMatchingPredicate(enemy_vec, &Predicate::HasGroundWeapon());
 	bool cloak = false;
 

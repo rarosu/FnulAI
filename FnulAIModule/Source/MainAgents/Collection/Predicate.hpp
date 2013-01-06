@@ -64,6 +64,12 @@ namespace Predicate
 		bool Evaluate(BWAPI::Unit* unit);
 	};
 
+	class IsMech : public Predicate
+	{
+	public:
+		bool Evaluate(BWAPI::Unit* unit);
+	};
+
 	class HasTech : public Predicate
 	{
 	public:

@@ -90,6 +90,17 @@ namespace Predicate
 	}
 
 
+	bool IsMech::Evaluate(BWAPI::Unit* unit)
+	{
+		if (unit != NULL && unit->getHitPoints() > 0)
+		{
+			return (unit->getType().isRobotic() || unit->getType().isMechanical());
+		}
+
+		return false;
+	}
+
+
 	HasTech::HasTech(const BWAPI::TechType& tech)
 		: m_tech(tech)
 	{}
