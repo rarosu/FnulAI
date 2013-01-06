@@ -718,6 +718,70 @@ TilePosition CoverMap::searchRefinerySpot()
 
 TilePosition CoverMap::findExpansionSite()
 {
+	/**
+		Find the expansion site that is:
+		1. Not occupied by a known enemy
+		2. Not occupied by an expansion of our own
+		3. Is closest to any of our own bases
+	*/
+
+	TilePosition result(-1, -1);
+
+	const std::set<BWTA::BaseLocation*>& baseLocations = BWTA::getBaseLocations();
+	std::set<BWTA::BaseLocation*>::const_iterator it;
+
+	UnitType baseType = Broodwar->self()->getRace().getCenter();
+
+	double bestWeight = 1000000.0;
+	for (it = baseLocations.begin(); it != baseLocations.end(); it++)
+	{
+		TilePosition expansionPosition = (*it)->getTilePosition();
+
+		// Check whether there are enemy structures near
+		if (ExplorationManager::Instance().spottedBuildingsWithinRange(expansionPosition, 20) > 0)
+			continue;
+
+		// Check whether we can build there
+		TilePosition expansionBuildSpot = findBuildSpot(baseType, expansionPosition);
+		if (expansionBuildSpot.x() < 0)
+			continue;
+		
+		// Check whether we already have an expansion at the site (TODO: Find a better way of detecting this)
+		BaseAgent* closestExpansion = AgentManager::Instance().getClosestBase(expansionBuildSpot);
+		TilePosition closestExpansionLocation(-1, -1);
+		if (closestExpansion != NULL)
+		{
+			closestExpansionLocation = closestExpansion->getUnit()->getTilePosition();
+			if (expansionBuildSpot.getDistance(closestExpansionLocation) < 10)
+				continue;
+		}
+		
+		/** Location is valid, weight it according to:
+			1. How close is it to a mineral field
+			2. How close is it to one of our existing bases
+		*/
+
+		Unit* closestMineral = findClosestMineral(expansionBuildSpot);
+		if (closestMineral == NULL)
+			continue;
+		
+		double distanceToMineral = closestMineral->getTilePosition().getDistance(expansionBuildSpot);
+		double distanceToExistingExpansion = 0;
+		if (closestExpansionLocation.x() >= 0)
+			distanceToExistingExpansion = mapData.getDistance(expansionBuildSpot, closestExpansionLocation);
+
+		// Smallest weight is best weight
+		double weight = (1.0 * distanceToMineral + 1.5 * distanceToExistingExpansion);
+		if (weight < bestWeight)
+		{
+			bestWeight = weight;
+			result = expansionBuildSpot;
+		}
+	}
+
+	return result;
+
+	/*
 	UnitType baseType = Broodwar->self()->getRace().getCenter();
 	double bestDist = 100000;
 	TilePosition bestPos = TilePosition(-1, -1);
@@ -775,9 +839,10 @@ TilePosition CoverMap::findExpansionSite()
 	}
 
 	return bestPos;
+	*/
 }
 
-Unit* CoverMap::findClosestMineral(TilePosition workerPos)
+Unit* CoverMap::findBestMiningField(TilePosition workerPos)
 {
 	/**
 		List all mineral fields and weight them according to:
@@ -808,53 +873,23 @@ Unit* CoverMap::findClosestMineral(TilePosition workerPos)
 	}
 
 	return mineral;
-
-	/*
-	Unit* mineral = NULL;
-	double bestDist = 10000;
-
-	for(set<BWTA::BaseLocation*>::const_iterator i=BWTA::getBaseLocations().begin(); i!= BWTA::getBaseLocations().end(); i++)
-	{
-		TilePosition pos = (*i)->getTilePosition();
-		double cDist = pos.getDistance(workerPos);
-		if (cDist < bestDist)
-		{
-			//Find closest base
-			BaseAgent* base = AgentManager::Instance().getClosestBase(pos);
-			double dist = pos.getDistance(base->getUnit()->getTilePosition());
-			if (dist <= 12)
-			{
-				//We have a base near this base location
-				//Check if we have minerals available
-				Unit* cMineral = hasMineralNear(pos);
-				if (cMineral != NULL)
-				{
-					mineral = cMineral;
-					bestDist = cDist;
-				}
-			}
-		}
-	}
-
-	//We have no base with minerals, do nothing
-	return mineral;
-	*/
 }
 
-Unit* CoverMap::hasMineralNear(TilePosition pos)
+Unit* CoverMap::findClosestMineral(const TilePosition& position)
 {
-	for(set<Unit*>::iterator m = Broodwar->getMinerals().begin(); m != Broodwar->getMinerals().end(); m++)
+	Unit* mineral = NULL;
+	double bestDistance = 1000000.0;
+	for (std::set<BWAPI::Unit*>::iterator m = Broodwar->getMinerals().begin(); m != Broodwar->getMinerals().end(); m++)
 	{
-		if ((*m)->exists() && (*m)->getResources() > 0)
+		double distance = (*m)->getTilePosition().getDistance(position);
+		if (distance < bestDistance)
 		{
-			double dist = pos.getDistance((*m)->getTilePosition());
-			if (dist <= 10)
-			{
-				return (*m);
-			}
+			bestDistance = distance;
+			mineral = (*m);
 		}
 	}
-	return NULL;
+
+	return mineral;
 }
 
 bool CoverMap::suitableForDetector(TilePosition pos)

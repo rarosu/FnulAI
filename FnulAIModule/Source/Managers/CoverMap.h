@@ -54,8 +54,6 @@ private:
 
 	bool baseUnderConstruction(BaseAgent* base);
 	TilePosition findBuildSpot(UnitType toBuild, TilePosition start);
-
-	Unit* hasMineralNear(TilePosition pos);
 public:
 	CoverMap();
 	~CoverMap();
@@ -103,7 +101,10 @@ public:
 	TilePosition findExpansionSite();
 
 	/** Finds a mineral to gather from. */
-	Unit* findClosestMineral(TilePosition workerPos);
+	Unit* findBestMiningField(TilePosition workerPos);
+
+	/** Get the distance to the closest mineral field */
+	Unit* findClosestMineral(const TilePosition& position);
 
 	/** Shows debug info on screen. */
 	void debug();

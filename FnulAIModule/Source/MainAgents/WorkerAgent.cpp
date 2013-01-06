@@ -236,7 +236,7 @@ void WorkerAgent::computeActions()
 	{
 		if (unit->isIdle())
 		{
-			Unit* mineral = CoverMap::Instance().findClosestMineral(unit->getTilePosition());
+			Unit* mineral = CoverMap::Instance().findBestMiningField(unit->getTilePosition());
 			if (mineral != NULL)
 			{
 				unit->rightClick(mineral);
