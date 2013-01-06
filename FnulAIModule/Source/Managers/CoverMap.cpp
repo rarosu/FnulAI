@@ -779,6 +779,37 @@ TilePosition CoverMap::findExpansionSite()
 
 Unit* CoverMap::findClosestMineral(TilePosition workerPos)
 {
+	/**
+		List all mineral fields and weight them according to:
+		1. How close they are to the workerPos
+		2. How close they are to an existing base
+	*/
+	Unit* mineral = NULL;
+	std::set<BWAPI::Unit*> mineralFields = Broodwar->getMinerals();
+	std::set<BWAPI::Unit*>::iterator it;
+
+	double bestWeight = 1000000.0;
+	for (it = mineralFields.begin(); it != mineralFields.end(); it++)
+	{
+		TilePosition mineralFieldPos = (*it)->getTilePosition();
+
+		BaseAgent* nearestBase = AgentManager::Instance().getClosestBase(mineralFieldPos);
+
+		double distanceToField = mineralFieldPos.getDistance(workerPos);
+		double distanceToBase = mineralFieldPos.getDistance(nearestBase->getUnit()->getTilePosition());
+
+		// Lower is better
+		double weight = (1.0 * distanceToField + 1.0 * distanceToBase);
+		if (weight < bestWeight)
+		{
+			bestWeight = weight;
+			mineral = (*it);
+		}
+	}
+
+	return mineral;
+
+	/*
 	Unit* mineral = NULL;
 	double bestDist = 10000;
 
@@ -807,6 +838,7 @@ Unit* CoverMap::findClosestMineral(TilePosition workerPos)
 
 	//We have no base with minerals, do nothing
 	return mineral;
+	*/
 }
 
 Unit* CoverMap::hasMineralNear(TilePosition pos)
