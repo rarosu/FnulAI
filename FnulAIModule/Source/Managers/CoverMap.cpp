@@ -320,6 +320,81 @@ TilePosition CoverMap::findBuildSpot(UnitType toBuild)
 	return TilePosition(-1, -1);
 }
 
+TilePosition CoverMap::findClosestBuildSpot(UnitType toBuild, TilePosition start)
+{
+	//Check start pos
+	if (canBuildAt(toBuild, start)) return start;
+
+	//Search outwards
+	int cDiff = 1;
+	TilePosition bestSpot = TilePosition(-1, -1);
+	double bestDistance = 1000000.0;
+	while (true) 
+	{
+		//Top
+		TilePosition s = TilePosition(start.x() - cDiff, start.y() - cDiff);
+		TilePosition e = TilePosition(start.x() + cDiff, start.y() - cDiff);
+		TilePosition spot = findSpotAtSide(toBuild, s, e);
+		if (spot.x() != -1 && spot.y() != -1)
+		{
+			double distance = mapData.getDistance(start, spot);
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestSpot = spot;
+			}
+		}
+
+		//Bottom
+		s = TilePosition(start.x() - cDiff, start.y() + cDiff);
+		e = TilePosition(start.x() + cDiff, start.y() + cDiff);
+		spot = findSpotAtSide(toBuild, s, e);
+		if (spot.x() != -1 && spot.y() != -1)
+		{
+			double distance = mapData.getDistance(start, spot);
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestSpot = spot;
+			}
+		}
+
+		//Left
+		s = TilePosition(start.x() - cDiff, start.y() - cDiff);
+		e = TilePosition(start.x() - cDiff, start.y() + cDiff);
+		spot = findSpotAtSide(toBuild, s, e);
+		if (spot.x() != -1 && spot.y() != -1)
+		{
+			double distance = mapData.getDistance(start, spot);
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestSpot = spot;
+			}
+		}
+
+		//Right
+		s = TilePosition(start.x() + cDiff, start.y() - cDiff);
+		e = TilePosition(start.x() + cDiff, start.y() + cDiff);
+		spot = findSpotAtSide(toBuild, s, e);
+		if (spot.x() != -1 && spot.y() != -1)
+		{
+			double distance = mapData.getDistance(start, spot);
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestSpot = spot;
+			}
+		}
+
+		cDiff++;
+		if (cDiff > range)
+			break;
+	}
+	
+	return bestSpot;
+}
+
 bool CoverMap::baseUnderConstruction(BaseAgent* base)
 {
 	if (BuildPlanner::isTerran())
@@ -742,7 +817,7 @@ TilePosition CoverMap::findExpansionSite()
 			continue;
 
 		// Check whether we can build there
-		TilePosition expansionBuildSpot = findBuildSpot(baseType, expansionPosition);
+		TilePosition expansionBuildSpot = findClosestBuildSpot(baseType, expansionPosition);
 		if (expansionBuildSpot.x() < 0)
 			continue;
 		
@@ -765,13 +840,17 @@ TilePosition CoverMap::findExpansionSite()
 		if (closestMineral == NULL)
 			continue;
 		
-		double distanceToMineral = closestMineral->getTilePosition().getDistance(expansionBuildSpot);
+		double distanceToMineral = mapData.getDistance(expansionBuildSpot, closestMineral->getTilePosition());
 		double distanceToExistingExpansion = 0;
 		if (closestExpansionLocation.x() >= 0)
 			distanceToExistingExpansion = mapData.getDistance(expansionBuildSpot, closestExpansionLocation);
 
+		// Normalize the inputs
+		double maxDistance = Broodwar->mapWidth() * Broodwar->mapWidth() + Broodwar->mapHeight() * Broodwar->mapHeight();
+
 		// Smallest weight is best weight
-		double weight = (1.0 * distanceToMineral + 1.5 * distanceToExistingExpansion);
+		double weight = (1.0 * distanceToMineral / maxDistance + 
+						 1.5 * distanceToExistingExpansion / maxDistance);
 		if (weight < bestWeight)
 		{
 			bestWeight = weight;
@@ -780,74 +859,15 @@ TilePosition CoverMap::findExpansionSite()
 	}
 
 	return result;
-
-	/*
-	UnitType baseType = Broodwar->self()->getRace().getCenter();
-	double bestDist = 100000;
-	TilePosition bestPos = TilePosition(-1, -1);
-	
-	//Iterate through all base locations
-	for(set<BWTA::BaseLocation*>::const_iterator i=BWTA::getBaseLocations().begin(); i!= BWTA::getBaseLocations().end(); i++)
-	{
-		TilePosition pos = (*i)->getTilePosition();
-		bool taken = false;
-		
-		//Check if own buildings are close
-		vector<BaseAgent*> agents = AgentManager::Instance().getAgents();
-		int noBases = 0;
-		for (int i = 0; i < (int)agents.size(); i++)
-		{
-			BaseAgent* agent = agents.at(i);
-			if (agent->isAlive() && agent->getUnitType().isResourceDepot())
-			{
-				double dist = pos.getDistance(agent->getUnit()->getTilePosition());
-				if (dist <= 12)
-				{
-					noBases++;
-				}
-			}
-		}
-		if (BuildPlanner::isZerg())
-		{
-			if (noBases >= 2) taken = true;
-		}
-		else
-		{
-			if (noBases >= 1) taken = true;
-		}
-
-		//Check if enemy buildings are close
-		int eCnt = ExplorationManager::Instance().spottedBuildingsWithinRange(pos, 20);
-		if (eCnt > 0)
-		{
-			taken = true;
-		}
-
-		//Not taken, calculate ground distance
-		if (!taken)
-		{
-			if (ExplorationManager::canReach(Broodwar->self()->getStartLocation(), pos))
-			{
-				double dist = mapData.getDistance(Broodwar->self()->getStartLocation(), pos);
-				if (dist <= bestDist)
-				{
-					bestDist = dist;
-					bestPos = pos;
-				}
-			}
-		}
-	}
-
-	return bestPos;
-	*/
 }
 
 Unit* CoverMap::findBestMiningField(TilePosition workerPos)
 {
 	/**
 		List all mineral fields and weight them according to:
-		1. How close they are to the workerPos
-		2. How close they are to an existing base
+		1. How close they are to an existing base (prioritize mineral fields close to a base)
+		2. How many workers there are at the base already (prioritize working at bases with few workers)
+		3. How close they are to the workerPos (prioritize moving a location close to us)
 	*/
 	Unit* mineral = NULL;
 	std::set<BWAPI::Unit*> mineralFields = Broodwar->getMinerals();
@@ -860,11 +880,18 @@ Unit* CoverMap::findBestMiningField(TilePosition workerPos)
 
 		BaseAgent* nearestBase = AgentManager::Instance().getClosestBase(mineralFieldPos);
 
-		double distanceToField = mineralFieldPos.getDistance(workerPos);
-		double distanceToBase = mineralFieldPos.getDistance(nearestBase->getUnit()->getTilePosition());
+		double distanceToField = mapData.getDistance(workerPos, mineralFieldPos);
+		double distanceToBase = mapData.getDistance(workerPos, nearestBase->getUnit()->getTilePosition());
+		//double workerCountApproximation = (*it)->getUnitsInRadius(10).size();
+
+		// Normalize the inputs
+		double maxDistance = Broodwar->mapWidth() * Broodwar->mapWidth() + Broodwar->mapHeight() * Broodwar->mapHeight();
+		//int maxWorkers = AgentManager::Instance().getNoWorkers();
 
 		// Lower is better
-		double weight = (1.0 * distanceToField + 1.0 * distanceToBase);
+		double weight = (1.0 * distanceToField / maxDistance + 
+						 10.0 * distanceToBase / maxDistance); //+ 
+						 //2.0 * workerCountApproximation / maxWorkers);
 		if (weight < bestWeight)
 		{
 			bestWeight = weight;
@@ -881,7 +908,8 @@ Unit* CoverMap::findClosestMineral(const TilePosition& position)
 	double bestDistance = 1000000.0;
 	for (std::set<BWAPI::Unit*>::iterator m = Broodwar->getMinerals().begin(); m != Broodwar->getMinerals().end(); m++)
 	{
-		double distance = (*m)->getTilePosition().getDistance(position);
+		//double distance = (*m)->getTilePosition().getDistance(position);
+		double distance = mapData.getDistance((*m)->getTilePosition(), position);
 		if (distance < bestDistance)
 		{
 			bestDistance = distance;

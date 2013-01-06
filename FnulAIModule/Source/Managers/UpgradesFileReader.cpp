@@ -93,7 +93,7 @@ void UpgradesFileReader::addUpgrade(string line)
 		int value = toInt(tokens.value);
 		if (value == 1) upgradesP1.push_back(type);
 		if (value == 2) upgradesP2.push_back(type);
-		if (value == 3) upgradesP2.push_back(type);
+		if (value == 3) upgradesP3.push_back(type);
 		return;
 	}
 	
@@ -102,8 +102,8 @@ void UpgradesFileReader::addUpgrade(string line)
 	{
 		int value = toInt(tokens.value);
 		if (value == 1) techsP1.push_back(ttype);
-		if (value == 2) techsP1.push_back(ttype);
-		if (value == 3) techsP1.push_back(ttype);
+		if (value == 2) techsP2.push_back(ttype);
+		if (value == 3) techsP3.push_back(ttype);
 		return;
 	}
 

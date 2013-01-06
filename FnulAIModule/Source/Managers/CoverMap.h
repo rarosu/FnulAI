@@ -86,6 +86,9 @@ public:
 	 * If no buildspot is found, a TilePosition(-1,-1) is returned. */
 	TilePosition findBuildSpot(UnitType toBuild);
 
+	/** Find the build spot that is the closest to the given position. Useful for expansions. */
+	TilePosition findClosestBuildSpot(UnitType toBuild, TilePosition start);
+
 	/** Searches for the closest vespene gas that is not in use. If no gas is sighted,
 	 * the ExplorationManager is queried. */
 	TilePosition findRefineryBuildSpot(UnitType toBuild, TilePosition start);

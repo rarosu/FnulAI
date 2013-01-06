@@ -81,10 +81,8 @@ bool SiegeTankAgent::isInStationaryDefensiveSquad()
 
 bool SiegeTankAgent::isThreatened()
 {
-	std::vector<BWAPI::Unit*> units;
 	std::set<BWAPI::Unit*> unitSet = unit->getUnitsInRadius(15);
-	for (std::set<BWAPI::Unit*>::iterator it = unitSet.begin(); it != unitSet.end(); it++)
-		units.push_back(*it);
+	std::vector<BWAPI::Unit*> units(unitSet.begin(), unitSet.end());
 
 	std::vector<BWAPI::Unit*> threats = units;
 	threats = getUnitsMatchingPredicate(threats, &Predicate::IsHostile());
@@ -129,11 +127,8 @@ bool SiegeTankAgent::hasTargetsInRange()
 	int minRange = BWAPI::WeaponTypes::Arclite_Shock_Cannon.minRange();
 	int maxRange = BWAPI::WeaponTypes::Arclite_Shock_Cannon.maxRange();
 
-	std::vector<BWAPI::Unit*> units;
-	//std::set<BWAPI::Unit*> unitSet = unit->getUnitsInRadius(maxRange);
 	std::set<BWAPI::Unit*> unitSet = unit->getUnitsInWeaponRange(BWAPI::WeaponTypes::Arclite_Shock_Cannon);
-	for (std::set<BWAPI::Unit*>::iterator it = unitSet.begin(); it != unitSet.end(); it++)
-		units.push_back(*it);
+	std::vector<BWAPI::Unit*> units(unitSet.begin(), unitSet.end());
 
 	std::vector<BWAPI::Unit*> targets = units;
 	targets = getUnitsMatchingPredicate(targets, &Predicate::IsHostile());
